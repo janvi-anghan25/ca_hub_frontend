@@ -8,24 +8,39 @@ import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../../store/slices/authSlice';
 import toast from 'react-hot-toast';
 
-const navItems = [
+// Items visible to all authenticated roles (admin + employee)
+const sharedNavItems = [
   { to: '/', icon: LayoutDashboard, label: 'Dashboard', exact: true },
   { to: '/clients', icon: Users, label: 'Clients' },
   { to: '/gst', icon: FileText, label: 'GST Returns' },
   { to: '/itr', icon: BarChart3, label: 'ITR Returns' },
-  { to: '/invoices', icon: Receipt, label: 'Invoices' },
-  { to: '/payments', icon: CreditCard, label: 'Payments' },
-  { to: '/documents', icon: FolderOpen, label: 'Documents' },
   { to: '/tasks', icon: CheckSquare, label: 'Tasks' },
-  { to: '/employees', icon: UserCog, label: 'Employees' },
+  { to: '/documents', icon: FolderOpen, label: 'Documents' },
   { to: '/calendar', icon: Calendar, label: 'Calendar' },
   { to: '/notifications', icon: Bell, label: 'Notifications' },
+];
+
+// Items visible only to admin
+const adminNavItems = [
+  { to: '/invoices', icon: Receipt, label: 'Invoices' },
+  { to: '/payments', icon: CreditCard, label: 'Payments' },
+  { to: '/employees', icon: UserCog, label: 'Employees' },
   { to: '/reports', icon: BarChart3, label: 'Reports' },
 ];
+
+const ROLE_BADGE = {
+  superadmin: { label: 'Super Admin', className: 'bg-purple-100 text-purple-700' },
+  admin: { label: 'Admin', className: 'bg-blue-100 text-blue-700' },
+  employee: { label: 'Employee', className: 'bg-green-100 text-green-700' },
+};
 
 const Sidebar = ({ isOpen, onClose }) => {
   const dispatch = useDispatch();
   const { user } = useSelector((s) => s.auth);
+
+  const role = user?.role || 'employee';
+  const isAdmin = role === 'admin';
+  const roleBadge = ROLE_BADGE[role] ?? ROLE_BADGE.employee;
 
   const handleLogout = async () => {
     await dispatch(logout());
@@ -65,7 +80,7 @@ const Sidebar = ({ isOpen, onClose }) => {
 
         {/* Navigation */}
         <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-0.5">
-          {navItems.map(({ to, icon: Icon, label, exact }) => (
+          {sharedNavItems.map(({ to, icon: Icon, label, exact }) => (
             <NavLink
               key={to}
               to={to}
@@ -79,6 +94,28 @@ const Sidebar = ({ isOpen, onClose }) => {
               <span>{label}</span>
             </NavLink>
           ))}
+
+          {/* Admin-only section */}
+          {isAdmin && (
+            <>
+              <p className="px-3 pt-4 pb-1 text-[11px] font-semibold uppercase tracking-widest text-gray-400">
+                Admin
+              </p>
+              {adminNavItems.map(({ to, icon: Icon, label }) => (
+                <NavLink
+                  key={to}
+                  to={to}
+                  className={({ isActive }) =>
+                    `sidebar-link ${isActive ? 'sidebar-link-active' : ''}`
+                  }
+                  onClick={onClose}
+                >
+                  <Icon size={18} />
+                  <span>{label}</span>
+                </NavLink>
+              ))}
+            </>
+          )}
         </nav>
 
         {/* User section */}
@@ -102,9 +139,11 @@ const Sidebar = ({ isOpen, onClose }) => {
             <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-semibold text-sm">
               {user?.name?.[0]?.toUpperCase() || 'U'}
             </div>
-            <div className="min-w-0">
+            <div className="min-w-0 flex-1">
               <p className="text-sm font-semibold text-gray-800 truncate">{user?.name || 'User'}</p>
-              <p className="text-xs text-gray-400 truncate capitalize">{user?.role || 'Admin'}</p>
+              <span className={`inline-block text-[10px] font-semibold px-1.5 py-0.5 rounded-full ${roleBadge.className}`}>
+                {roleBadge.label}
+              </span>
             </div>
           </div>
         </div>

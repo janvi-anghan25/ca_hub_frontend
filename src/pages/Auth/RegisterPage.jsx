@@ -23,7 +23,7 @@ const registerSchema = z.object({
     .regex(/[A-Z]/, 'Must contain an uppercase letter')
     .regex(/[a-z]/, 'Must contain a lowercase letter')
     .regex(/\d/, 'Must contain a number'),
-  role: z.enum(['admin', 'employee']).optional(),
+    role: z.enum(['admin', 'superadmin']).optional(),
 });
 
 const PasswordRule = ({ met, label }) => (
@@ -129,7 +129,7 @@ const RegisterPage = () => {
             <label className="label">Role</label>
             <select {...register('role')} className="input">
               <option value="admin">Admin</option>
-              <option value="employee">Employee</option>
+              <option value="superadmin">Super Admin</option>
             </select>
           </div>
 
