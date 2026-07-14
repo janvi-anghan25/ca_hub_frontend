@@ -102,12 +102,12 @@ const TasksPage = () => {
                 {tasks.map((t) => (
                   <tr key={t._id}>
                     <td>
-                      <p className="font-medium text-gray-900 text-sm">{t.title}</p>
-                      {t.category && <p className="text-xs text-gray-400">{t.category}</p>}
+                      <p className="font-medium text-forest text-sm">{t.title}</p>
+                      {t.category && <p className="text-xs text-forest-400">{t.category}</p>}
                     </td>
-                    <td className="text-sm text-gray-600">{t.client?.clientName || '—'}</td>
-                    <td className="text-sm text-gray-600">{t.assignedTo?.name || '—'}</td>
-                    <td className={`text-sm ${t.dueDate && isPast(new Date(t.dueDate)) && t.status !== 'Done' ? 'text-red-600 font-semibold' : 'text-gray-700'}`}>
+                    <td className="text-sm text-forest-400">{t.client?.clientName || '—'}</td>
+                    <td className="text-sm text-forest-400">{t.assignedTo?.name || '—'}</td>
+                    <td className={`text-sm ${t.dueDate && isPast(new Date(t.dueDate)) && t.status !== 'Done' ? 'text-red-600 font-semibold' : 'text-forest'}`}>
                       {t.dueDate ? format(new Date(t.dueDate), 'dd MMM yyyy') : '—'}
                     </td>
                     <td><span className={`badge ${PRIORITY_COLORS[t.priority] || 'badge-gray'}`}>{t.priority}</span></td>

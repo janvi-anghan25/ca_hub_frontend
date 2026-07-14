@@ -46,10 +46,10 @@ const InvoicePage = () => {
         <div>
           <h1 className="page-title">Invoices</h1>
           {stats && (
-            <div className="flex items-center gap-3 mt-1 text-xs text-gray-500">
-              <span>Total: <strong>₹{stats.totalRevenue?.toLocaleString('en-IN')}</strong></span>
-              <span>Collected: <strong className="text-emerald-600">₹{stats.totalPaid?.toLocaleString('en-IN')}</strong></span>
-              <span>Pending: <strong className="text-red-600">₹{stats.totalPending?.toLocaleString('en-IN')}</strong></span>
+            <div className="flex items-center gap-3 mt-1 text-xs text-forest-400">
+              <span>Total: <strong className="font-mono text-forest">₹{stats.totalRevenue?.toLocaleString('en-IN')}</strong></span>
+              <span>Collected: <strong className="font-mono text-emerald-600">₹{stats.totalPaid?.toLocaleString('en-IN')}</strong></span>
+              <span>Pending: <strong className="font-mono text-red-600">₹{stats.totalPending?.toLocaleString('en-IN')}</strong></span>
             </div>
           )}
         </div>
@@ -65,7 +65,7 @@ const InvoicePage = () => {
               key={s || 'all'}
               onClick={() => { setStatusFilter(s); setPage(1); }}
               className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${
-                statusFilter === s ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-600 border-gray-300 hover:border-blue-400'
+                statusFilter === s ? 'bg-forest text-parchment border-forest' : 'bg-white text-forest-400 border-forest-200 hover:border-forest-400'
               }`}
             >
               {s || 'All'}
@@ -95,15 +95,15 @@ const InvoicePage = () => {
               <tbody>
                 {invoices.map((inv) => (
                   <tr key={inv._id}>
-                    <td className="font-mono text-sm font-semibold text-blue-700">{inv.invoiceNumber}</td>
+                    <td className="font-mono text-sm font-semibold text-forest">{inv.invoiceNumber}</td>
                     <td>
-                      <p className="font-medium text-sm text-gray-900">{inv.client?.clientName}</p>
-                      <p className="text-xs text-gray-400">{inv.client?.firmName}</p>
+                      <p className="font-medium text-sm text-forest">{inv.client?.clientName}</p>
+                      <p className="text-xs text-forest-400">{inv.client?.firmName}</p>
                     </td>
-                    <td className="text-sm text-gray-600">{format(new Date(inv.invoiceDate), 'dd MMM yyyy')}</td>
-                    <td className="text-sm font-medium text-gray-900">₹{inv.totalAmount?.toLocaleString('en-IN')}</td>
-                    <td className="text-sm text-emerald-600 font-medium">₹{inv.paidAmount?.toLocaleString('en-IN')}</td>
-                    <td className={`text-sm font-semibold ${inv.balanceDue > 0 ? 'text-red-600' : 'text-gray-400'}`}>
+                    <td className="text-sm text-forest-400">{format(new Date(inv.invoiceDate), 'dd MMM yyyy')}</td>
+                    <td className="text-sm font-medium font-mono text-forest">₹{inv.totalAmount?.toLocaleString('en-IN')}</td>
+                    <td className="text-sm text-emerald-600 font-medium font-mono">₹{inv.paidAmount?.toLocaleString('en-IN')}</td>
+                    <td className={`text-sm font-semibold font-mono ${inv.balanceDue > 0 ? 'text-red-600' : 'text-forest-400'}`}>
                       ₹{inv.balanceDue?.toLocaleString('en-IN')}
                     </td>
                     <td><StatusBadge status={inv.paymentStatus} /></td>

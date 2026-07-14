@@ -44,15 +44,16 @@ const ForgotPasswordPage = () => {
 
   return (
     <AuthLayout>
-      <div className="bg-white rounded-2xl shadow-card border border-gray-100 p-8">
+      <div className="bg-white rounded-2xl shadow-card border border-forest-200 p-8">
         {!sent ? (
           <>
             {/* Form state */}
             <div className="mb-7">
-              <div className="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center mb-4">
-                <Mail size={24} className="text-blue-600" />
+              <div className="w-12 h-12 bg-forest-50 rounded-2xl flex items-center justify-center mb-4">
+                <Mail size={24} className="text-forest-500" />
               </div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-1">Forgot your password?</h2>
+              <h2 className="font-display text-2xl text-forest mb-1">Forgot your password?</h2>
+              <div className="page-title-rule mb-2" />
               <p className="text-gray-500 text-sm">
                 Enter your registered email and we'll send you a 6-digit OTP to reset your password.
               </p>
@@ -95,10 +96,11 @@ const ForgotPasswordPage = () => {
           <>
             {/* Success state */}
             <div className="text-center mb-7">
-              <div className="w-16 h-16 bg-emerald-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <Mail size={32} className="text-emerald-600" />
+              <div className="w-16 h-16 bg-forest-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <Mail size={32} className="text-forest-500" />
               </div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">Check your email</h2>
+              <h2 className="font-display text-2xl text-forest mb-2">Check your email</h2>
+              <div className="page-title-rule mb-2 mx-auto" />
               <p className="text-gray-500 text-sm">
                 We've sent a 6-digit OTP to{' '}
                 <strong className="text-gray-700">{submittedEmail}</strong>.
@@ -107,9 +109,9 @@ const ForgotPasswordPage = () => {
               </p>
             </div>
 
-            <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 mb-6">
-              <p className="text-xs text-blue-700 font-medium">💡 Tip</p>
-              <p className="text-xs text-blue-600 mt-1">
+            <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6">
+              <p className="text-xs text-amber-900 font-medium">Tip</p>
+              <p className="text-xs text-amber-800 mt-1">
                 The OTP is valid for <strong>10 minutes</strong>. If you don't see the email, check your spam folder or try again.
               </p>
             </div>
@@ -130,7 +132,7 @@ const ForgotPasswordPage = () => {
         <div className="mt-6 text-center">
           <Link
             to="/login"
-            className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 transition-colors"
+            className="inline-flex items-center gap-1.5 text-sm text-forest-500 hover:text-forest transition-colors"
           >
             <ArrowLeft size={14} />
             Back to sign in

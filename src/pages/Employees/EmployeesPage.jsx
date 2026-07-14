@@ -62,8 +62,8 @@ const EmployeesPage = () => {
               <thead>
                 <tr>
                   <th>Name</th>
+                  <th>Login ID</th>
                   <th>Mobile</th>
-                  <th>Email</th>
                   <th>Designation</th>
                   <th>Clients</th>
                   <th>Actions</th>
@@ -74,16 +74,21 @@ const EmployeesPage = () => {
                   <tr key={emp._id}>
                     <td>
                       <div className="flex items-center gap-2.5">
-                        <div className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center text-purple-700 font-semibold text-sm">
+                        <div className="w-8 h-8 rounded-full bg-brass/20 flex items-center justify-center text-brass-deep font-semibold text-sm">
                           {emp.name?.[0]?.toUpperCase()}
                         </div>
-                        <p className="font-medium text-sm text-gray-900">{emp.name}</p>
+                        <div>
+                          <p className="font-medium text-sm text-forest">{emp.name}</p>
+                          {emp.user?.mustChangePassword && (
+                            <span className="text-[10px] font-medium text-amber-600">Pending password change</span>
+                          )}
+                        </div>
                       </div>
                     </td>
-                    <td className="text-sm text-gray-600">{emp.mobile}</td>
-                    <td className="text-sm text-gray-600">{emp.email || '—'}</td>
-                    <td className="text-sm text-gray-600">{emp.designation || '—'}</td>
-                    <td className="text-sm text-gray-600">{emp.assignedClients?.length || 0}</td>
+                    <td className="text-sm text-forest-400 font-mono">{emp.email || emp.user?.email || '—'}</td>
+                    <td className="text-sm text-forest-400">{emp.mobile}</td>
+                    <td className="text-sm text-forest-400">{emp.designation || '—'}</td>
+                    <td className="text-sm text-forest-400">{emp.assignedClients?.length || 0}</td>
                     <td>
                       <div className="flex items-center gap-1">
                         <button onClick={() => { setEditEmp(emp); setShowForm(true); }} className="p-1.5 rounded-lg hover:bg-amber-50 text-gray-400 hover:text-amber-600"><Edit2 size={14} /></button>

@@ -1,40 +1,36 @@
-import { useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
-import Sidebar from './Sidebar';
+import { useDispatch, useSelector } from 'react-redux';
+import toast from 'react-hot-toast';
+import { logout } from '../../store/slices/authSlice';
+import { OFFICE_NAV_GROUPS, PAGE_TITLES } from '../../config/navGroups';
+import IconRailShell from './IconRailShell';
 import Topbar from './Topbar';
 
-const PAGE_TITLES = {
-  '/': 'Dashboard',
-  '/clients': 'Clients',
-  '/gst': 'GST Returns',
-  '/itr': 'ITR Returns',
-  '/invoices': 'Invoices',
-  '/payments': 'Payments',
-  '/documents': 'Documents',
-  '/tasks': 'Tasks',
-  '/employees': 'Employees',
-  '/calendar': 'Calendar',
-  '/notifications': 'Notifications',
-  '/reports': 'Reports',
-  '/settings': 'Settings',
-};
-
 const AppLayout = () => {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
   const location = useLocation();
+  const dispatch = useDispatch();
+  const { user } = useSelector((s) => s.auth);
+  const role = user?.role || 'employee';
+  const title = PAGE_TITLES[location.pathname] || 'CA Hub';
 
-  const title = PAGE_TITLES[location.pathname] || 'CA Management';
+  const handleLogout = async () => {
+    await dispatch(logout());
+    toast.success('Logged out successfully');
+  };
 
   return (
-    <div className="flex h-screen bg-gray-50 overflow-hidden">
-      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-        <Topbar onMenuClick={() => setSidebarOpen(true)} title={title} />
-        <main className="flex-1 overflow-y-auto p-4 sm:p-6">
-          <Outlet />
-        </main>
-      </div>
-    </div>
+    <IconRailShell
+      groups={OFFICE_NAV_GROUPS}
+      role={role}
+      user={user}
+      onLogout={handleLogout}
+      brandSubtitle="CA Hub"
+    >
+      <Topbar title={title} />
+      <main className="flex-1 overflow-y-auto p-4 sm:p-6 pb-24 lg:pb-6">
+        <Outlet />
+      </main>
+    </IconRailShell>
   );
 };
 

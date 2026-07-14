@@ -29,7 +29,7 @@ const schema = z
 const OTP_LENGTH = 6;
 
 const PasswordRule = ({ met, label }) => (
-  <div className={`flex items-center gap-1.5 text-xs transition-colors ${met ? 'text-emerald-600' : 'text-gray-400'}`}>
+  <div className={`flex items-center gap-1.5 text-xs transition-colors ${met ? 'text-forest-500' : 'text-gray-400'}`}>
     {met ? <Check size={12} /> : <X size={12} />}
     <span>{label}</span>
   </div>
@@ -137,16 +137,17 @@ const ResetPasswordPage = () => {
   if (success) {
     return (
       <AuthLayout>
-        <div className="bg-white rounded-2xl shadow-card border border-gray-100 p-8 text-center">
-          <div className="w-16 h-16 bg-emerald-50 rounded-2xl flex items-center justify-center mx-auto mb-5">
-            <ShieldCheck size={32} className="text-emerald-600" />
+        <div className="bg-white rounded-2xl shadow-card border border-forest-200 p-8 text-center">
+          <div className="w-16 h-16 bg-forest-50 rounded-2xl flex items-center justify-center mx-auto mb-5">
+            <ShieldCheck size={32} className="text-forest-500" />
           </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Password Reset!</h2>
+          <h2 className="font-display text-2xl text-forest mb-2">Password Reset!</h2>
+          <div className="page-title-rule mb-2 mx-auto" />
           <p className="text-gray-500 text-sm mb-6">
             Your password has been updated successfully. Redirecting you to the dashboard…
           </p>
-          <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
-            <div className="h-full bg-emerald-500 rounded-full animate-pulse" style={{ width: '100%' }} />
+          <div className="h-1.5 bg-forest-100 rounded-full overflow-hidden">
+            <div className="h-full bg-forest-500 rounded-full animate-pulse" style={{ width: '100%' }} />
           </div>
         </div>
       </AuthLayout>
@@ -155,12 +156,13 @@ const ResetPasswordPage = () => {
 
   return (
     <AuthLayout>
-      <div className="bg-white rounded-2xl shadow-card border border-gray-100 p-8">
+      <div className="bg-white rounded-2xl shadow-card border border-forest-200 p-8">
         <div className="mb-7">
-          <div className="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center mb-4">
-            <KeyRound size={24} className="text-blue-600" />
+          <div className="w-12 h-12 bg-forest-50 rounded-2xl flex items-center justify-center mb-4">
+            <KeyRound size={24} className="text-forest-500" />
           </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-1">Reset password</h2>
+          <h2 className="font-display text-2xl text-forest mb-1">Reset password</h2>
+          <div className="page-title-rule mb-2" />
           <p className="text-gray-500 text-sm">
             Enter the OTP from your email and choose a new password.
           </p>
@@ -197,8 +199,8 @@ const ResetPasswordPage = () => {
                   onKeyDown={(e) => handleOtpKeyDown(idx, e)}
                   className={`
                     w-full aspect-square text-center text-xl font-bold rounded-xl border-2 transition-all outline-none
-                    ${digit ? 'border-blue-500 bg-blue-50 text-blue-700' : 'border-gray-200 bg-gray-50 text-gray-700'}
-                    focus:border-blue-500 focus:bg-blue-50 focus:ring-2 focus:ring-blue-100
+                    ${digit ? 'border-forest-500 bg-forest-50 text-forest' : 'border-forest-200 bg-forest-50 text-gray-700'}
+                    focus:border-forest-500 focus:bg-forest-50 focus:ring-2 focus:ring-brass/30
                   `}
                 />
               ))}
@@ -284,13 +286,13 @@ const ResetPasswordPage = () => {
         <div className="mt-6 text-center space-y-2">
           <p className="text-sm text-gray-500">
             Didn't get the OTP?{' '}
-            <Link to="/forgot-password" className="text-blue-600 hover:text-blue-800 font-medium">
+            <Link to="/forgot-password" className="text-forest-500 hover:text-forest font-medium">
               Resend OTP
             </Link>
           </p>
           <Link
             to="/login"
-            className="inline-flex items-center gap-1.5 text-sm text-gray-400 hover:text-gray-600 transition-colors"
+            className="inline-flex items-center gap-1.5 text-sm text-forest-500 hover:text-forest transition-colors"
           >
             <ArrowLeft size={14} />
             Back to sign in

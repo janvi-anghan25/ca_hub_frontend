@@ -14,10 +14,16 @@ const loginSchema = z.object({
   password: z.string().min(1, 'Password is required'),
 });
 
+const redirectAfterAuth = (user) => {
+  if (user?.mustChangePassword) return '/change-password';
+  if (user?.role === 'superadmin') return '/super-admin';
+  return '/';
+};
+
 const LoginPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { loading, error, isAuthenticated } = useSelector((s) => s.auth);
+  const { loading, error, isAuthenticated, user } = useSelector((s) => s.auth);
   const [showPwd, setShowPwd] = useState(false);
 
   const { register, handleSubmit, formState: { errors } } = useForm({
@@ -25,30 +31,33 @@ const LoginPage = () => {
   });
 
   useEffect(() => {
-    if (isAuthenticated) navigate('/', { replace: true });
+    if (isAuthenticated && user) {
+      navigate(redirectAfterAuth(user), { replace: true });
+    }
     return () => { dispatch(clearError()); };
-  }, [isAuthenticated, navigate, dispatch]);
+  }, [isAuthenticated, user, navigate, dispatch]);
 
   const onSubmit = async (data) => {
     const result = await dispatch(login(data));
     if (login.fulfilled.match(result)) {
-      toast.success('Welcome back!');
-      navigate('/');
+      const loggedInUser = result.payload.user;
+      toast.success(loggedInUser?.mustChangePassword ? 'Please set a new password' : 'Welcome back!');
+      navigate(redirectAfterAuth(loggedInUser), { replace: true });
     }
   };
 
   return (
     <AuthLayout>
-      <div className="bg-white rounded-2xl shadow-card border border-gray-100 p-8">
+      <div className="bg-white rounded-2xl shadow-card border border-forest-200 p-8">
         <div className="mb-7">
-          <h2 className="text-2xl font-bold text-gray-900 mb-1">Welcome back</h2>
+          <h2 className="font-display text-2xl text-forest mb-1">Welcome back</h2>
+          <div className="page-title-rule mb-2" />
           <p className="text-gray-500 text-sm">Sign in to your account to continue</p>
         </div>
 
         {error && (
-          <div className="mb-5 p-3.5 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm flex items-start gap-2">
-            <span className="mt-0.5">⚠️</span>
-            <span>{error}</span>
+          <div className="mb-5 p-3.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-sm">
+            {error}
           </div>
         )}
 
@@ -70,7 +79,7 @@ const LoginPage = () => {
               <label className="label mb-0">Password</label>
               <Link
                 to="/forgot-password"
-                className="text-xs text-blue-600 hover:text-blue-800 font-medium"
+                className="text-xs text-forest-500 hover:text-forest font-medium"
               >
                 Forgot password?
               </Link>
@@ -113,12 +122,9 @@ const LoginPage = () => {
           </button>
         </form>
 
-        <p className="text-center text-sm text-gray-500 mt-6">
-          Don't have an account?{' '}
-          <Link to="/register" className="text-blue-600 hover:text-blue-800 font-semibold">
-            Create account
-          </Link>
-        </p>
+        {/* <p className="text-center text-sm text-gray-400 mt-6">
+          Accounts are created by your Super Admin. Contact them if you need access.
+        </p> */}
       </div>
     </AuthLayout>
   );

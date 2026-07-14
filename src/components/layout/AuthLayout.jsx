@@ -1,57 +1,37 @@
-import { Building2 } from 'lucide-react';
-
-const FEATURES = [
-  'Client Management',
-  'GST Returns',
-  'ITR Filing',
-  'Invoice Generation',
-  'WhatsApp Reminders',
-  'Payment Tracking',
-];
-
 const AuthLayout = ({ children }) => (
   <div className="min-h-screen flex">
-    {/* Left decorative panel */}
-    <div className="hidden lg:flex lg:w-5/12 xl:w-1/2 bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 flex-col items-center justify-center p-12 text-white relative overflow-hidden">
-      {/* Background circles */}
-      <div className="absolute top-0 right-0 w-72 h-72 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2" />
-      <div className="absolute bottom-0 left-0 w-64 h-64 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2" />
-
-      <div className="relative max-w-sm text-center space-y-7">
-        {/* Logo */}
-        <div className="w-20 h-20 bg-white/15 border border-white/20 rounded-3xl flex items-center justify-center mx-auto backdrop-blur-sm shadow-lg">
-          <Building2 size={40} className="text-white" />
+    <div className="hidden lg:flex lg:w-5/12 xl:w-1/2 bg-gradient-to-br from-forest via-forest-500 to-forest-700 flex-col justify-center p-12 text-parchment relative overflow-hidden">
+      <div
+        className="absolute inset-0 opacity-30"
+        style={{
+          backgroundImage:
+            'radial-gradient(circle at 20% 20%, #C4A57433, transparent 45%), radial-gradient(circle at 80% 80%, #1A4A4288, transparent 40%)',
+        }}
+      />
+      <div className="relative max-w-md space-y-6">
+        <div className="w-14 h-14 rounded-2xl bg-brass text-forest font-display font-bold text-xl flex items-center justify-center">
+          CA
         </div>
-
-        {/* Headline */}
         <div>
-          <h1 className="text-3xl font-bold mb-3 tracking-tight">CA Office Management</h1>
-          <p className="text-blue-100 text-sm leading-relaxed">
-            Manage your entire CA office workflow — clients, GST returns, ITR filings, invoices, and more — from a single platform.
+          <p className="text-xs tracking-[0.2em] uppercase text-brass mb-3">CA Hub</p>
+          <h1 className="font-display text-4xl font-semibold leading-tight text-parchment">
+            Your practice,<br />one ledger.
+          </h1>
+          <p className="mt-4 text-forest-300 text-sm leading-relaxed">
+            Clients, GST, ITR, invoices, and tasks — calm tooling for filing season.
           </p>
         </div>
-
-        {/* Feature pills */}
-        <div className="grid grid-cols-2 gap-2.5 text-left">
-          {FEATURES.map((f) => (
-            <div key={f} className="flex items-center gap-2 bg-white/10 border border-white/10 rounded-xl px-3 py-2">
-              <div className="w-1.5 h-1.5 bg-blue-300 rounded-full flex-shrink-0" />
-              <span className="text-xs text-blue-50 font-medium">{f}</span>
-            </div>
-          ))}
-        </div>
+        <div className="h-0.5 w-16 bg-brass" />
       </div>
     </div>
 
-    {/* Right content panel */}
-    <div className="flex-1 flex items-center justify-center p-5 sm:p-8 bg-gray-50 overflow-y-auto">
+    <div className="flex-1 flex items-center justify-center p-5 sm:p-8 bg-forest-50 overflow-y-auto">
       <div className="w-full max-w-md">
-        {/* Mobile logo */}
         <div className="flex items-center gap-2 mb-6 lg:hidden">
-          <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-            <Building2 size={18} className="text-white" />
+          <div className="w-8 h-8 rounded-lg bg-brass text-forest font-display font-bold text-sm flex items-center justify-center">
+            CA
           </div>
-          <span className="font-bold text-gray-900">CA Management</span>
+          <span className="font-display font-semibold text-forest">CA Hub</span>
         </div>
         {children}
       </div>

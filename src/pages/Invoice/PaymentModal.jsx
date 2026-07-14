@@ -39,10 +39,10 @@ const PaymentModal = ({ invoice, onSuccess, onClose }) => {
       }
     >
       <div className="space-y-4">
-        <div className="p-3 bg-blue-50 rounded-xl">
-          <p className="text-xs text-blue-600 mb-0.5">Invoice #{invoice.invoiceNumber}</p>
-          <p className="text-sm font-semibold text-blue-800">{invoice.client?.clientName}</p>
-          <p className="text-xs text-blue-600 mt-1">Balance Due: <strong>₹{invoice.balanceDue?.toLocaleString('en-IN')}</strong></p>
+        <div className="p-3 bg-forest-50 rounded-xl border border-forest-100">
+          <p className="text-xs text-forest-500 mb-0.5 font-mono">Invoice #{invoice.invoiceNumber}</p>
+          <p className="text-sm font-semibold text-forest">{invoice.client?.clientName}</p>
+          <p className="text-xs text-forest-500 mt-1">Balance Due: <strong className="font-mono">₹{invoice.balanceDue?.toLocaleString('en-IN')}</strong></p>
         </div>
         <form className="space-y-3">
           <div className="form-group">

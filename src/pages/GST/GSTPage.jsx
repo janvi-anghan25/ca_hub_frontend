@@ -58,11 +58,11 @@ const GSTPage = () => {
   };
 
   const getDueDateClass = (dueDate, status) => {
-    if (['Filed', 'Late Filed'].includes(status)) return 'text-gray-500';
+    if (['Filed', 'Late Filed'].includes(status)) return 'text-forest-400';
     const d = new Date(dueDate);
     if (isPast(d)) return 'text-red-600 font-semibold';
     if (isToday(d)) return 'text-orange-600 font-semibold';
-    return 'text-gray-700';
+    return 'text-forest';
   };
 
   return (
@@ -116,22 +116,22 @@ const GSTPage = () => {
                 {returns.map((r) => (
                   <tr key={r._id}>
                     <td>
-                      <p className="font-medium text-gray-900 text-sm">{r.client?.clientName}</p>
-                      <p className="text-xs text-gray-400 font-mono">{r.client?.gstNumber}</p>
+                      <p className="font-medium text-forest text-sm">{r.client?.clientName}</p>
+                      <p className="text-xs text-forest-400 font-mono">{r.client?.gstNumber}</p>
                     </td>
                     <td><span className="badge badge-blue">{r.returnType}</span></td>
-                    <td className="text-sm text-gray-600">
+                    <td className="text-sm text-forest-400">
                       {r.period?.month ? `${r.period.month}/${r.period.year}` : r.period?.year}
                     </td>
                     <td className={`text-sm ${getDueDateClass(r.dueDate, r.status)}`}>
                       {format(new Date(r.dueDate), 'dd MMM yyyy')}
                     </td>
-                    <td className="text-sm text-gray-600">
+                    <td className="text-sm text-forest-400">
                       {r.filedDate ? format(new Date(r.filedDate), 'dd MMM yyyy') : '—'}
                     </td>
                     <td><StatusBadge status={r.status} /></td>
                     <td className="text-sm">
-                      {r.lateFee > 0 ? <span className="text-red-600 font-medium">₹{r.lateFee.toLocaleString('en-IN')}</span> : '—'}
+                      {r.lateFee > 0 ? <span className="text-red-600 font-medium font-mono">₹{r.lateFee.toLocaleString('en-IN')}</span> : '—'}
                     </td>
                     <td>
                       <div className="flex items-center gap-1">

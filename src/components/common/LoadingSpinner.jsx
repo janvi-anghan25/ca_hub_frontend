@@ -5,15 +5,15 @@ const LoadingSpinner = ({ size = 'md', className = '' }) => {
     lg: 'h-12 w-12 border-3',
   };
   return (
-    <div className={`animate-spin rounded-full border-gray-200 border-t-blue-600 ${sizes[size]} ${className}`} />
+    <div className={`animate-spin rounded-full border-forest border-t-transparent ${sizes[size]} ${className}`} />
   );
 };
 
 export const PageLoader = () => (
-  <div className="flex h-screen items-center justify-center bg-gray-50">
+  <div className="flex h-screen items-center justify-center bg-forest-50">
     <div className="flex flex-col items-center gap-3">
       <LoadingSpinner size="lg" />
-      <p className="text-sm text-gray-500 font-medium">Loading...</p>
+      <p className="text-sm text-forest-400 font-medium">Loading...</p>
     </div>
   </div>
 );

@@ -50,13 +50,13 @@ const PaymentsPage = () => {
       {stats && (
         <div className="grid grid-cols-3 gap-4 mb-4">
           {[
-            { label: 'Total Invoiced', value: `₹${(stats.totalRevenue || 0).toLocaleString('en-IN')}`, color: 'text-blue-600' },
+            { label: 'Total Invoiced', value: `₹${(stats.totalRevenue || 0).toLocaleString('en-IN')}`, color: 'text-forest-500' },
             { label: 'Collected', value: `₹${(stats.totalPaid || 0).toLocaleString('en-IN')}`, color: 'text-emerald-600' },
             { label: 'Pending', value: `₹${(stats.totalPending || 0).toLocaleString('en-IN')}`, color: 'text-red-600' },
           ].map((s) => (
             <div key={s.label} className="card">
-              <p className="text-xs text-gray-500 mb-1">{s.label}</p>
-              <p className={`text-xl font-bold ${s.color}`}>{s.value}</p>
+              <p className="text-xs text-forest-400 mb-1">{s.label}</p>
+              <p className={`text-xl font-bold font-mono ${s.color}`}>{s.value}</p>
             </div>
           ))}
         </div>
@@ -81,11 +81,11 @@ const PaymentsPage = () => {
                 {payments.map((inv) => (
                   <tr key={inv._id}>
                     <td>
-                      <p className="font-medium text-sm text-gray-900">{inv.client?.clientName}</p>
+                      <p className="font-medium text-sm text-forest">{inv.client?.clientName}</p>
                     </td>
-                    <td className="font-mono text-sm text-blue-700">{inv.invoiceNumber}</td>
-                    <td className="text-sm font-semibold text-gray-900">₹{inv.totalAmount?.toLocaleString('en-IN')}</td>
-                    <td className="text-sm text-gray-600">{format(new Date(inv.invoiceDate), 'dd MMM yyyy')}</td>
+                    <td className="font-mono text-sm text-forest">{inv.invoiceNumber}</td>
+                    <td className="text-sm font-semibold font-mono text-forest">₹{inv.totalAmount?.toLocaleString('en-IN')}</td>
+                    <td className="text-sm text-forest-400">{format(new Date(inv.invoiceDate), 'dd MMM yyyy')}</td>
                     <td><span className="badge badge-green">Paid</span></td>
                   </tr>
                 ))}
