@@ -29,12 +29,34 @@ const processQueue = (error, token = null) => {
   refreshQueue = [];
 };
 
+const isPublicAuthRequest = (url = '') =>
+  ['/auth/login', '/auth/forgot-password', '/auth/reset-password', '/auth/refresh-token'].some(
+    (path) => url.includes(path)
+  );
+
+const redirectToLogin = () => {
+  localStorage.removeItem('accessToken');
+  delete api.defaults.headers.Authorization;
+
+  const onLoginPage = window.location.pathname.startsWith('/login');
+  if (!onLoginPage) {
+    window.location.assign('/login');
+  }
+};
+
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
-    const originalRequest = error.config;
+    const originalRequest = error.config || {};
+    const status = error.response?.status;
+    const requestUrl = originalRequest.url || '';
 
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    // Failed login / forgot / reset should show the form error — do not bounce the page
+    if (status === 401 && isPublicAuthRequest(requestUrl)) {
+      return Promise.reject(error);
+    }
+
+    if (status === 401 && !originalRequest._retry) {
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
           refreshQueue.push({ resolve, reject });
@@ -43,14 +65,21 @@ api.interceptors.response.use(
             originalRequest.headers.Authorization = `Bearer ${token}`;
             return api(originalRequest);
           })
-          .catch((err) => Promise.reject(err));
+          .catch((err) => {
+            redirectToLogin();
+            return Promise.reject(err);
+          });
       }
 
       originalRequest._retry = true;
       isRefreshing = true;
 
       try {
-        const { data } = await axios.post(`${BASE_URL}/auth/refresh-token`, {}, { withCredentials: true });
+        const { data } = await axios.post(
+          `${BASE_URL}/auth/refresh-token`,
+          {},
+          { withCredentials: true }
+        );
         const { accessToken } = data.data;
         localStorage.setItem('accessToken', accessToken);
         api.defaults.headers.Authorization = `Bearer ${accessToken}`;
@@ -58,18 +87,21 @@ api.interceptors.response.use(
         return api(originalRequest);
       } catch (refreshError) {
         processQueue(refreshError, null);
-        localStorage.removeItem('accessToken');
-        window.location.href = '/login';
+        redirectToLogin();
         return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;
       }
     }
 
-    const message = error.response?.data?.message || 'Something went wrong';
-    if (error.response?.status !== 401) {
-      toast.error(message);
+    // Any remaining 401 (e.g. retry still unauthorized) → login
+    if (status === 401) {
+      redirectToLogin();
+      return Promise.reject(error);
     }
+
+    const message = error.response?.data?.message || 'Something went wrong';
+    toast.error(message);
 
     return Promise.reject(error);
   }

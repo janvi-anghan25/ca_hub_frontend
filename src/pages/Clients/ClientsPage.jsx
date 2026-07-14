@@ -74,7 +74,7 @@ const ClientsPage = () => {
       <div className="page-header">
         <div>
           <h1 className="page-title">Clients</h1>
-          <p className="text-sm text-gray-500 mt-0.5">{total} clients registered</p>
+          <p className="text-sm text-forest-400 mt-0.5">{total} clients registered</p>
         </div>
         <button className="btn-primary" onClick={() => { setEditClient(null); setShowForm(true); }}>
           <Plus size={16} />
@@ -139,25 +139,25 @@ const ClientsPage = () => {
                   <tr key={client._id}>
                     <td>
                       <div className="flex items-center gap-2.5">
-                        <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-semibold text-sm flex-shrink-0">
+                        <div className="w-8 h-8 rounded-full bg-forest-100 flex items-center justify-center text-forest font-semibold text-sm flex-shrink-0">
                           {client.clientName?.[0]?.toUpperCase()}
                         </div>
                         <div>
-                          <p className="font-medium text-gray-900 text-sm">{client.clientName}</p>
-                          {client.firmName && <p className="text-xs text-gray-400">{client.firmName}</p>}
+                          <p className="font-medium text-forest text-sm">{client.clientName}</p>
+                          {client.firmName && <p className="text-xs text-forest-400">{client.firmName}</p>}
                         </div>
                       </div>
                     </td>
                     <td>
-                      <div className="flex items-center gap-1.5 text-gray-600">
+                      <div className="flex items-center gap-1.5 text-forest-400">
                         <Phone size={13} />
                         <span className="text-sm">{client.mobile}</span>
                       </div>
                     </td>
                     <td>
                       <div className="text-xs space-y-1">
-                        {client.gstNumber && <p className="font-mono text-gray-600">{client.gstNumber}</p>}
-                        {client.panNumber && <p className="font-mono text-gray-500">{client.panNumber}</p>}
+                        {client.gstNumber && <p className="font-mono text-forest">{client.gstNumber}</p>}
+                        {client.panNumber && <p className="font-mono text-forest-400">{client.panNumber}</p>}
                       </div>
                     </td>
                     <td>
@@ -175,7 +175,7 @@ const ClientsPage = () => {
                       <div className="flex items-center gap-1">
                         <button
                           onClick={() => setViewClient(client)}
-                          className="p-1.5 rounded-lg hover:bg-blue-50 text-gray-400 hover:text-blue-600 transition-colors"
+                          className="p-1.5 rounded-lg hover:bg-forest-50 text-forest-400 hover:text-forest transition-colors"
                           title="View"
                         >
                           <Eye size={15} />

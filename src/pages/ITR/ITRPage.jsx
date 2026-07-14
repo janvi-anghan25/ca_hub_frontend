@@ -105,15 +105,15 @@ const ITRPage = () => {
                 {returns.map((r) => (
                   <tr key={r._id}>
                     <td>
-                      <p className="font-medium text-gray-900 text-sm">{r.client?.clientName}</p>
-                      <p className="text-xs text-gray-400 font-mono">{r.client?.panNumber}</p>
+                      <p className="font-medium text-forest text-sm">{r.client?.clientName}</p>
+                      <p className="text-xs text-forest-400 font-mono">{r.client?.panNumber}</p>
                     </td>
                     <td><span className="badge badge-purple">{r.formType}</span></td>
-                    <td className="text-sm font-medium text-gray-700">AY {r.assessmentYear}</td>
-                    <td className={`text-sm ${isPast(new Date(r.dueDate)) && !['Filed','Late Filed','Revised'].includes(r.status) ? 'text-red-600 font-semibold' : 'text-gray-700'}`}>
+                    <td className="text-sm font-medium text-forest">AY {r.assessmentYear}</td>
+                    <td className={`text-sm ${isPast(new Date(r.dueDate)) && !['Filed','Late Filed','Revised'].includes(r.status) ? 'text-red-600 font-semibold' : 'text-forest'}`}>
                       {format(new Date(r.dueDate), 'dd MMM yyyy')}
                     </td>
-                    <td className="text-sm text-gray-600">
+                    <td className="text-sm text-forest-400">
                       {r.filedDate ? format(new Date(r.filedDate), 'dd MMM yyyy') : '—'}
                     </td>
                     <td><StatusBadge status={r.refundStatus} /></td>

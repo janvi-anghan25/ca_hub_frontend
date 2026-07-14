@@ -40,7 +40,7 @@ const NotificationsPage = () => {
       <div className="page-header">
         <div>
           <h1 className="page-title">Notifications</h1>
-          {unreadCount > 0 && <p className="text-sm text-gray-500">{unreadCount} unread</p>}
+          {unreadCount > 0 && <p className="text-sm text-forest-400">{unreadCount} unread</p>}
         </div>
         {unreadCount > 0 && (
           <button className="btn-secondary btn-sm" onClick={markAllRead}>
@@ -53,22 +53,22 @@ const NotificationsPage = () => {
         {loading ? <SectionLoader /> : notifications.length === 0 ? (
           <EmptyState icon={Bell} title="No notifications" description="You're all caught up!" />
         ) : (
-          <div className="divide-y divide-gray-100">
+          <div className="divide-y divide-forest-100">
             {notifications.map((n) => (
               <div
                 key={n._id}
                 onClick={() => !n.isRead && markRead(n._id)}
-                className={`flex items-start gap-4 px-5 py-4 cursor-pointer hover:bg-gray-50 transition-colors ${!n.isRead ? 'bg-blue-50/50' : ''}`}
+                className={`flex items-start gap-4 px-5 py-4 cursor-pointer hover:bg-forest-50 transition-colors ${!n.isRead ? 'bg-forest-50/50' : ''}`}
               >
-                <div className={`mt-0.5 p-2 rounded-lg flex-shrink-0 ${!n.isRead ? 'bg-blue-100' : 'bg-gray-100'}`}>
-                  <Info size={16} className={!n.isRead ? 'text-blue-600' : 'text-gray-500'} />
+                <div className={`mt-0.5 p-2 rounded-lg flex-shrink-0 ${!n.isRead ? 'bg-forest-100' : 'bg-forest-50'}`}>
+                  <Info size={16} className={!n.isRead ? 'text-forest-500' : 'text-forest-400'} />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className={`text-sm ${!n.isRead ? 'font-semibold text-gray-900' : 'text-gray-700'}`}>{n.title}</p>
-                  <p className="text-xs text-gray-500 mt-0.5">{n.message}</p>
-                  <p className="text-xs text-gray-400 mt-1">{formatDistanceToNow(new Date(n.createdAt), { addSuffix: true })}</p>
+                  <p className={`text-sm ${!n.isRead ? 'font-semibold text-forest' : 'text-forest-500'}`}>{n.title}</p>
+                  <p className="text-xs text-forest-400 mt-0.5">{n.message}</p>
+                  <p className="text-xs text-forest-400 mt-1">{formatDistanceToNow(new Date(n.createdAt), { addSuffix: true })}</p>
                 </div>
-                {!n.isRead && <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 flex-shrink-0" />}
+                {!n.isRead && <div className="w-2 h-2 bg-forest rounded-full mt-2 flex-shrink-0" />}
               </div>
             ))}
           </div>

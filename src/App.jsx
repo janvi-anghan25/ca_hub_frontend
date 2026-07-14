@@ -8,9 +8,9 @@ import RoleGuard from './components/common/RoleGuard';
 
 // Auth pages
 const LoginPage = lazy(() => import('./pages/Auth/LoginPage'));
-const RegisterPage = lazy(() => import('./pages/Auth/RegisterPage'));
 const ForgotPasswordPage = lazy(() => import('./pages/Auth/ForgotPasswordPage'));
 const ResetPasswordPage = lazy(() => import('./pages/Auth/ResetPasswordPage'));
+const ChangePasswordPage = lazy(() => import('./pages/Auth/ChangePasswordPage'));
 
 // Shared pages (admin + employee)
 const DashboardPage = lazy(() => import('./pages/Dashboard/DashboardPage'));
@@ -33,14 +33,23 @@ const SuperAdminDashboard = lazy(() => import('./pages/SuperAdmin/SuperAdminDash
 const OfficesPage = lazy(() => import('./pages/SuperAdmin/OfficesPage'));
 const AdminsPage = lazy(() => import('./pages/SuperAdmin/AdminsPage'));
 
+const getHomePath = (user) => {
+  if (user?.mustChangePassword) return '/change-password';
+  if (user?.role === 'superadmin') return '/super-admin';
+  return '/';
+};
+
 const ProtectedRoute = ({ children }) => {
-  const { isAuthenticated } = useSelector((s) => s.auth);
-  return isAuthenticated ? children : <Navigate to="/login" replace />;
+  const { isAuthenticated, user } = useSelector((s) => s.auth);
+  if (!isAuthenticated) return <Navigate to="/login" replace />;
+  if (user?.mustChangePassword) return <Navigate to="/change-password" replace />;
+  return children;
 };
 
 const PublicRoute = ({ children }) => {
-  const { isAuthenticated } = useSelector((s) => s.auth);
-  return !isAuthenticated ? children : <Navigate to="/" replace />;
+  const { isAuthenticated, user } = useSelector((s) => s.auth);
+  if (isAuthenticated) return <Navigate to={getHomePath(user)} replace />;
+  return children;
 };
 
 const App = () => {
@@ -56,13 +65,21 @@ const App = () => {
   return (
     <Suspense fallback={<PageLoader />}>
       <Routes>
-        {/* Public routes */}
+        {/* Public routes — no self-registration */}
         <Route path="/login" element={<PublicRoute><LoginPage /></PublicRoute>} />
-        <Route path="/register" element={<PublicRoute><RegisterPage /></PublicRoute>} />
+        <Route path="/register" element={<Navigate to="/login" replace />} />
         <Route path="/forgot-password" element={<PublicRoute><ForgotPasswordPage /></PublicRoute>} />
         <Route path="/reset-password" element={<PublicRoute><ResetPasswordPage /></PublicRoute>} />
 
-        {/* Super Admin portal — completely separate layout */}
+        {/* Forced password change after temp invite */}
+        <Route
+          path="/change-password"
+          element={
+            isAuthenticated ? <ChangePasswordPage /> : <Navigate to="/login" replace />
+          }
+        />
+
+        {/* Super Admin portal */}
         <Route
           path="/super-admin"
           element={
@@ -89,7 +106,6 @@ const App = () => {
             </ProtectedRoute>
           }
         >
-          {/* Shared: admin + employee */}
           <Route index element={<DashboardPage />} />
           <Route path="clients" element={<ClientsPage />} />
           <Route path="gst" element={<GSTPage />} />
@@ -99,27 +115,19 @@ const App = () => {
           <Route path="documents" element={<DocumentsPage />} />
           <Route path="calendar" element={<DashboardPage />} />
           <Route path="settings" element={<DashboardPage />} />
-
-          {/* Admin-only */}
-          <Route
-            path="invoices"
-            element={<RoleGuard roles={['admin']}><InvoicePage /></RoleGuard>}
-          />
+          <Route path="invoices" element={<InvoicePage />} />
           <Route
             path="employees"
-            element={<RoleGuard roles={['admin']}><EmployeesPage /></RoleGuard>}
+            element={
+              <RoleGuard roles={['admin']}>
+                <EmployeesPage />
+              </RoleGuard>
+            }
           />
-          <Route
-            path="reports"
-            element={<RoleGuard roles={['admin']}><ReportsPage /></RoleGuard>}
-          />
-          <Route
-            path="payments"
-            element={<RoleGuard roles={['admin']}><PaymentsPage /></RoleGuard>}
-          />
+          <Route path="reports" element={<ReportsPage />} />
+          <Route path="payments" element={<PaymentsPage />} />
         </Route>
 
-        {/* Catch all */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Suspense>

@@ -13,8 +13,8 @@ const CATEGORIES = ['PAN', 'GST', 'Aadhaar', 'Bank', 'Rent Agreement', 'Balance 
 
 const FILE_ICON = {
   'application/pdf': <FileText size={20} className="text-red-500" />,
-  'image/jpeg': <Image size={20} className="text-blue-500" />,
-  'image/png': <Image size={20} className="text-blue-500" />,
+  'image/jpeg': <Image size={20} className="text-forest-500" />,
+  'image/png': <Image size={20} className="text-forest-500" />,
 };
 
 const DocumentsPage = () => {
@@ -120,18 +120,18 @@ const DocumentsPage = () => {
           {loading ? <SectionLoader /> : documents.length === 0 ? (
             <EmptyState title="No documents" description="Upload documents for this client" />
           ) : (
-            <div className="divide-y divide-gray-100">
+            <div className="divide-y divide-forest-100">
               {documents.map((doc) => (
-                <div key={doc._id} className="flex items-center gap-4 px-5 py-4 hover:bg-gray-50 transition-colors">
+                <div key={doc._id} className="flex items-center gap-4 px-5 py-4 hover:bg-forest-50 transition-colors">
                   <div className="flex-shrink-0">
-                    {FILE_ICON[doc.fileType] || <File size={20} className="text-gray-400" />}
+                    {FILE_ICON[doc.fileType] || <File size={20} className="text-forest-400" />}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="font-medium text-sm text-gray-900">{doc.title}</p>
+                    <p className="font-medium text-sm text-forest">{doc.title}</p>
                     <div className="flex items-center gap-3 mt-0.5">
                       <span className="badge badge-blue">{doc.category}</span>
-                      <span className="text-xs text-gray-400">{format(new Date(doc.createdAt), 'dd MMM yyyy')}</span>
-                      {doc.fileSize && <span className="text-xs text-gray-400">{(doc.fileSize / 1024).toFixed(1)} KB</span>}
+                      <span className="text-xs text-forest-400">{format(new Date(doc.createdAt), 'dd MMM yyyy')}</span>
+                      {doc.fileSize && <span className="text-xs text-forest-400 font-mono">{(doc.fileSize / 1024).toFixed(1)} KB</span>}
                     </div>
                   </div>
                   <div className="flex items-center gap-1">
@@ -140,11 +140,11 @@ const DocumentsPage = () => {
                       target="_blank"
                       rel="noopener noreferrer"
                       download={doc.fileName}
-                      className="p-1.5 rounded-lg hover:bg-blue-50 text-gray-400 hover:text-blue-600 transition-colors"
+                      className="p-1.5 rounded-lg hover:bg-forest-50 text-forest-400 hover:text-forest transition-colors"
                     >
                       <Download size={15} />
                     </a>
-                    <button onClick={() => setDeleteId(doc._id)} className="p-1.5 rounded-lg hover:bg-red-50 text-gray-400 hover:text-red-600">
+                    <button onClick={() => setDeleteId(doc._id)} className="p-1.5 rounded-lg hover:bg-red-50 text-forest-400 hover:text-red-600">
                       <Trash2 size={15} />
                     </button>
                   </div>

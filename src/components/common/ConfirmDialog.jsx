@@ -21,7 +21,7 @@ const ConfirmDialog = ({ isOpen, onClose, onConfirm, title = 'Confirm Action', m
         <div className="flex-shrink-0 p-2 rounded-full bg-red-100">
           <AlertTriangle size={20} className="text-red-600" />
         </div>
-        <p className="text-gray-600 text-sm leading-relaxed">{message || 'Are you sure? This action cannot be undone.'}</p>
+        <p className="text-forest-400 text-sm leading-relaxed">{message || 'Are you sure? This action cannot be undone.'}</p>
       </div>
     </Modal>
   );

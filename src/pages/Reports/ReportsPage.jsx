@@ -9,7 +9,7 @@ import {
 } from 'recharts';
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4'];
+const COLORS = ['#1B4332', '#2D6A4F', '#C9A227', '#ef4444', '#52796F', '#95D5B2'];
 
 const ReportsPage = () => {
   const [year, setYear] = useState(new Date().getFullYear());
@@ -58,7 +58,7 @@ const ReportsPage = () => {
           {/* Revenue Report */}
           <div className="card">
             <h3 className="section-title flex items-center gap-2">
-              <TrendingUp size={18} className="text-blue-600" /> Revenue Report {year}
+              <TrendingUp size={18} className="text-forest-500" /> Revenue Report {year}
             </h3>
             <ResponsiveContainer width="100%" height={280}>
               <BarChart data={revenueData} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
@@ -72,8 +72,8 @@ const ReportsPage = () => {
                   contentStyle={{ borderRadius: '10px', border: '1px solid #e5e7eb', fontSize: 12 }}
                 />
                 <Legend wrapperStyle={{ fontSize: 12 }} />
-                <Bar dataKey="invoiced" name="Invoiced" fill="#bfdbfe" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="collected" name="Collected" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="invoiced" name="Invoiced" fill="#95D5B2" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="collected" name="Collected" fill="#1B4332" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -81,14 +81,14 @@ const ReportsPage = () => {
           {/* Summary Cards */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             {[
-              { label: 'Total Invoiced', value: `₹${revenueData.reduce((s, d) => s + d.invoiced, 0).toLocaleString('en-IN')}`, color: 'text-blue-600', bg: 'bg-blue-50' },
+              { label: 'Total Invoiced', value: `₹${revenueData.reduce((s, d) => s + d.invoiced, 0).toLocaleString('en-IN')}`, color: 'text-forest-500', bg: 'bg-forest-50' },
               { label: 'Total Collected', value: `₹${revenueData.reduce((s, d) => s + d.collected, 0).toLocaleString('en-IN')}`, color: 'text-emerald-600', bg: 'bg-emerald-50' },
               { label: 'Outstanding', value: `₹${(revenueData.reduce((s, d) => s + d.invoiced, 0) - revenueData.reduce((s, d) => s + d.collected, 0)).toLocaleString('en-IN')}`, color: 'text-red-600', bg: 'bg-red-50' },
-              { label: 'Avg Monthly', value: `₹${(revenueData.reduce((s, d) => s + d.collected, 0) / 12).toLocaleString('en-IN', { maximumFractionDigits: 0 })}`, color: 'text-purple-600', bg: 'bg-purple-50' },
+              { label: 'Avg Monthly', value: `₹${(revenueData.reduce((s, d) => s + d.collected, 0) / 12).toLocaleString('en-IN', { maximumFractionDigits: 0 })}`, color: 'text-brass-deep', bg: 'bg-brass/20' },
             ].map((s) => (
               <div key={s.label} className={`card ${s.bg} border-0`}>
-                <p className="text-xs text-gray-500 mb-1">{s.label}</p>
-                <p className={`text-xl font-bold ${s.color}`}>{s.value}</p>
+                <p className="text-xs text-forest-400 mb-1">{s.label}</p>
+                <p className={`text-xl font-bold font-mono ${s.color}`}>{s.value}</p>
               </div>
             ))}
           </div>

@@ -1,14 +1,13 @@
 import { useEffect, useState, useCallback } from 'react';
-import { Building2, Search, ToggleLeft, ToggleRight, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Building2, Search, ToggleLeft, ToggleRight } from 'lucide-react';
 import { superAdminApi } from '../../api/superAdminApi';
+import { SectionLoader } from '../../components/common/LoadingSpinner';
+import Pagination from '../../components/common/Pagination';
+import EmptyState from '../../components/common/EmptyState';
 import toast from 'react-hot-toast';
 
 const StatusBadge = ({ isActive }) => (
-  <span
-    className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-      isActive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-600'
-    }`}
-  >
+  <span className={isActive ? 'badge-green' : 'badge-red'}>
     {isActive ? 'Active' : 'Suspended'}
   </span>
 );
@@ -63,116 +62,97 @@ const OfficesPage = () => {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
+      <div className="page-header">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">CA Offices</h1>
-          <p className="text-sm text-gray-500 mt-1">{total} offices registered</p>
+          <h1 className="page-title">CA Offices</h1>
+          <div className="page-title-rule" />
+          <p className="text-sm text-forest-400 mt-1">{total} offices registered</p>
         </div>
       </div>
 
-      {/* Search */}
-      <form onSubmit={handleSearch} className="flex gap-2 mb-6">
-        <div className="relative flex-1 max-w-sm">
-          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-          <input
-            type="text"
-            value={searchInput}
-            onChange={(e) => setSearchInput(e.target.value)}
-            placeholder="Search by name or email..."
-            className="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
-          />
+      <form onSubmit={handleSearch} className="card mb-4">
+        <div className="flex flex-col sm:flex-row gap-3">
+          <div className="relative flex-1 max-w-md">
+            <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-forest-400" />
+            <input
+              type="text"
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              placeholder="Search by name or email..."
+              className="input pl-9"
+            />
+          </div>
+          <button type="submit" className="btn-primary sm:w-auto">
+            Search
+          </button>
         </div>
-        <button
-          type="submit"
-          className="px-4 py-2 bg-purple-600 text-white text-sm font-medium rounded-lg hover:bg-purple-700 transition-colors"
-        >
-          Search
-        </button>
       </form>
 
-      {/* Table */}
-      <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+      <div className="card p-0">
         {loading ? (
-          <div className="flex items-center justify-center h-48">
-            <div className="animate-spin w-7 h-7 border-4 border-purple-600 border-t-transparent rounded-full" />
-          </div>
+          <SectionLoader />
         ) : offices.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-48 text-gray-400">
-            <Building2 size={36} className="mb-2 opacity-30" />
-            <p className="text-sm">No offices found</p>
-          </div>
+          <EmptyState icon={Building2} title="No offices found" />
         ) : (
-          <table className="w-full text-sm">
-            <thead className="bg-gray-50 border-b border-gray-100">
-              <tr>
-                <th className="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Office</th>
-                <th className="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Admin</th>
-                <th className="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Contact</th>
-                <th className="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
-                <th className="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Action</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-50">
-              {offices.map((office) => (
-                <tr key={office._id} className="hover:bg-gray-50 transition-colors">
-                  <td className="px-5 py-4">
-                    <p className="font-medium text-gray-900">{office.name}</p>
-                    <p className="text-xs text-gray-400 mt-0.5">
-                      {[office.address?.city, office.address?.state].filter(Boolean).join(', ') || '—'}
-                    </p>
-                  </td>
-                  <td className="px-5 py-4">
-                    <p className="text-gray-700">{office.owner?.name || '—'}</p>
-                    <p className="text-xs text-gray-400">{office.owner?.email}</p>
-                  </td>
-                  <td className="px-5 py-4 text-gray-500">{office.mobile || office.email || '—'}</td>
-                  <td className="px-5 py-4">
-                    <StatusBadge isActive={office.isActive} />
-                  </td>
-                  <td className="px-5 py-4">
-                    <button
-                      onClick={() => handleToggleStatus(office._id, office.isActive)}
-                      disabled={toggling === office._id}
-                      title={office.isActive ? 'Suspend office' : 'Activate office'}
-                      className="text-gray-400 hover:text-purple-600 transition-colors disabled:opacity-50"
-                    >
-                      {office.isActive
-                        ? <ToggleRight size={22} className="text-green-500" />
-                        : <ToggleLeft size={22} className="text-gray-400" />
-                      }
-                    </button>
-                  </td>
+          <div className="table-container">
+            <table className="table">
+              <thead>
+                <tr>
+                  <th>Office</th>
+                  <th>Admin</th>
+                  <th>Contact</th>
+                  <th>Status</th>
+                  <th>Action</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {offices.map((office) => (
+                  <tr key={office._id}>
+                    <td>
+                      <p className="font-medium text-forest text-sm">{office.name}</p>
+                      <p className="text-xs text-forest-400 mt-0.5">
+                        {[office.address?.city, office.address?.state].filter(Boolean).join(', ') || '—'}
+                      </p>
+                    </td>
+                    <td>
+                      <p className="text-sm text-forest">{office.owner?.name || '—'}</p>
+                      <p className="text-xs text-forest-400">{office.owner?.email}</p>
+                    </td>
+                    <td className="text-sm text-forest-400">{office.mobile || office.email || '—'}</td>
+                    <td>
+                      <StatusBadge isActive={office.isActive} />
+                    </td>
+                    <td>
+                      <button
+                        onClick={() => handleToggleStatus(office._id, office.isActive)}
+                        disabled={toggling === office._id}
+                        title={office.isActive ? 'Suspend office' : 'Activate office'}
+                        className="p-1.5 rounded-lg text-forest-400 hover:bg-forest-50 hover:text-forest transition-colors disabled:opacity-50"
+                      >
+                        {office.isActive
+                          ? <ToggleRight size={22} className="text-forest-500" />
+                          : <ToggleLeft size={22} className="text-forest-400" />
+                        }
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+        {!loading && offices.length > 0 && (
+          <div className="px-5 pb-4 pt-2">
+            <Pagination
+              page={page}
+              totalPages={totalPages}
+              onPageChange={setPage}
+              total={total}
+              limit={limit}
+            />
+          </div>
         )}
       </div>
-
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="flex items-center justify-between mt-4">
-          <p className="text-sm text-gray-500">
-            Showing {(page - 1) * limit + 1}–{Math.min(page * limit, total)} of {total}
-          </p>
-          <div className="flex gap-1">
-            <button
-              onClick={() => setPage((p) => Math.max(1, p - 1))}
-              disabled={page === 1}
-              className="p-1.5 rounded-lg border border-gray-200 disabled:opacity-40 hover:bg-gray-50"
-            >
-              <ChevronLeft size={16} />
-            </button>
-            <button
-              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-              disabled={page === totalPages}
-              className="p-1.5 rounded-lg border border-gray-200 disabled:opacity-40 hover:bg-gray-50"
-            >
-              <ChevronRight size={16} />
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

@@ -27,7 +27,7 @@ const registerSchema = z.object({
 });
 
 const PasswordRule = ({ met, label }) => (
-  <div className={`flex items-center gap-1.5 text-xs transition-colors ${met ? 'text-emerald-600' : 'text-gray-400'}`}>
+  <div className={`flex items-center gap-1.5 text-xs transition-colors ${met ? 'text-forest-500' : 'text-gray-400'}`}>
     {met ? <Check size={12} /> : <X size={12} />}
     <span>{label}</span>
   </div>
@@ -70,16 +70,16 @@ const RegisterPage = () => {
 
   return (
     <AuthLayout>
-      <div className="bg-white rounded-2xl shadow-card border border-gray-100 p-8">
+      <div className="bg-white rounded-2xl shadow-card border border-forest-200 p-8">
         <div className="mb-7">
-          <h2 className="text-2xl font-bold text-gray-900 mb-1">Create your account</h2>
+          <h2 className="font-display text-2xl text-forest mb-1">Create your account</h2>
+          <div className="page-title-rule mb-2" />
           <p className="text-gray-500 text-sm">Set up your CA Management account</p>
         </div>
 
         {error && (
-          <div className="mb-5 p-3.5 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm flex items-start gap-2">
-            <span className="mt-0.5">⚠️</span>
-            <span>{error}</span>
+          <div className="mb-5 p-3.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-sm">
+            {error}
           </div>
         )}
 
@@ -185,7 +185,7 @@ const RegisterPage = () => {
 
         <p className="text-center text-sm text-gray-500 mt-6">
           Already have an account?{' '}
-          <Link to="/login" className="text-blue-600 hover:text-blue-800 font-semibold">
+          <Link to="/login" className="text-forest-500 hover:text-forest font-semibold">
             Sign in
           </Link>
         </p>

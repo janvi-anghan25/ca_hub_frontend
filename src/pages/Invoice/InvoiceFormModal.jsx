@@ -97,7 +97,7 @@ const InvoiceFormModal = ({ invoice, onSuccess, onClose }) => {
         {/* Line Items */}
         <div>
           <div className="flex items-center justify-between mb-3">
-            <h3 className="font-semibold text-gray-800 text-sm">Line Items</h3>
+            <h3 className="font-display font-semibold text-forest text-sm">Line Items</h3>
             <button type="button" className="btn-secondary btn-sm" onClick={() => append({ description: '', quantity: 1, rate: 0, amount: 0 })}>
               <Plus size={13} /> Add Item
             </button>
@@ -114,7 +114,7 @@ const InvoiceFormModal = ({ invoice, onSuccess, onClose }) => {
                 <div className="col-span-3">
                   <input {...register(`lineItems.${idx}.rate`, { valueAsNumber: true })} type="number" className="input" placeholder="Rate (₹)" min="0" />
                 </div>
-                <div className="col-span-1 pt-2 text-right text-sm font-medium text-gray-700">
+                <div className="col-span-1 pt-2 text-right text-sm font-medium font-mono text-forest">
                   ₹{((Number(lineItems[idx]?.quantity) * Number(lineItems[idx]?.rate)) || 0).toLocaleString('en-IN')}
                 </div>
                 <div className="col-span-1 flex justify-end">
@@ -149,11 +149,11 @@ const InvoiceFormModal = ({ invoice, onSuccess, onClose }) => {
               </div>
             </div>
           </div>
-          <div className="bg-gray-50 rounded-xl p-4 space-y-2 text-sm">
-            <div className="flex justify-between text-gray-600"><span>Subtotal</span><span>₹{subTotal.toLocaleString('en-IN')}</span></div>
-            {discountAmount > 0 && <div className="flex justify-between text-gray-600"><span>Discount</span><span className="text-red-500">-₹{discountAmount.toLocaleString('en-IN')}</span></div>}
-            <div className="flex justify-between text-gray-600"><span>GST ({gstRate}%)</span><span>₹{gstAmount.toLocaleString('en-IN')}</span></div>
-            <div className="flex justify-between font-bold text-gray-900 border-t border-gray-200 pt-2 text-base"><span>Total</span><span>₹{total.toLocaleString('en-IN')}</span></div>
+          <div className="bg-forest-50 rounded-xl p-4 space-y-2 text-sm">
+            <div className="flex justify-between text-forest-400"><span>Subtotal</span><span className="font-mono">₹{subTotal.toLocaleString('en-IN')}</span></div>
+            {discountAmount > 0 && <div className="flex justify-between text-forest-400"><span>Discount</span><span className="font-mono text-red-500">-₹{discountAmount.toLocaleString('en-IN')}</span></div>}
+            <div className="flex justify-between text-forest-400"><span>GST ({gstRate}%)</span><span className="font-mono">₹{gstAmount.toLocaleString('en-IN')}</span></div>
+            <div className="flex justify-between font-bold text-forest border-t border-forest-200 pt-2 text-base"><span>Total</span><span className="font-mono">₹{total.toLocaleString('en-IN')}</span></div>
           </div>
         </div>
 

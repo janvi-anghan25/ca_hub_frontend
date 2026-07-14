@@ -139,8 +139,8 @@ const ClientFormModal = ({ client, onSuccess, onClose }) => {
                 onClick={() => toggleCategory(cat)}
                 className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${
                   selectedCategories.includes(cat)
-                    ? 'bg-blue-600 text-white border-blue-600'
-                    : 'bg-white text-gray-600 border-gray-300 hover:border-blue-400'
+                    ? 'bg-forest text-parchment border-forest'
+                    : 'bg-white text-forest-400 border-forest-200 hover:border-forest-400'
                 }`}
               >
                 {cat}
