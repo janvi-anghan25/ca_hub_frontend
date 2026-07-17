@@ -233,7 +233,7 @@ const AdminsPage = () => {
             <label className="label">Full Name</label>
             <input
               {...register('name')}
-              className="input"
+              className={`input ${errors.name ? 'input-error' : ''}`}
               placeholder="Admin full name"
             />
             {errors.name && <p className="error-text">{errors.name.message}</p>}
@@ -244,7 +244,7 @@ const AdminsPage = () => {
             <input
               {...register('email')}
               type="email"
-              className="input"
+              className={`input ${errors.email ? 'input-error' : ''}`}
               placeholder="admin@example.com"
             />
             {errors.email && <p className="error-text">{errors.email.message}</p>}
@@ -254,7 +254,7 @@ const AdminsPage = () => {
             <label className="label">Mobile (optional)</label>
             <input
               {...register('mobile')}
-              className="input"
+              className={`input ${errors.mobile ? 'input-error' : ''}`}
               placeholder="9876543210"
             />
             {errors.mobile && <p className="error-text">{errors.mobile.message}</p>}
@@ -264,7 +264,7 @@ const AdminsPage = () => {
             <label className="label">CA Firm / Office Name</label>
             <input
               {...register('officeName')}
-              className="input"
+              className={`input ${errors.officeName ? 'input-error' : ''}`}
               placeholder="e.g. Sharma & Associates"
             />
             {errors.officeName && <p className="error-text">{errors.officeName.message}</p>}

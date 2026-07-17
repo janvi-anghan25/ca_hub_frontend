@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Plus, Edit2, Trash2, Users } from 'lucide-react';
-import api from '../../api/axiosInstance';
+import { employeeApi } from '../../api/employeeApi';
 import { SectionLoader } from '../../components/common/LoadingSpinner';
 import Pagination from '../../components/common/Pagination';
 import EmptyState from '../../components/common/EmptyState';
@@ -22,7 +22,7 @@ const EmployeesPage = () => {
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const { data } = await api.get('/employees', { params: { page, limit: LIMIT } });
+      const { data } = await employeeApi.getAll({ page, limit: LIMIT });
       setEmployees(data.data);
       setTotal(data.meta.total);
     } finally {
@@ -35,7 +35,7 @@ const EmployeesPage = () => {
   const handleDelete = async () => {
     setDeleting(true);
     try {
-      await api.delete(`/employees/${deleteId}`);
+      await employeeApi.remove(deleteId);
       toast.success('Employee removed');
       setDeleteId(null);
       load();

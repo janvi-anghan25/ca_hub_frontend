@@ -1,10 +1,12 @@
-import { useForm, Controller } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { clientApi } from '../../api/clientApi';
 import Modal from '../../components/common/Modal';
 import toast from 'react-hot-toast';
+
+const CATEGORIES = ['GST', 'ITR', 'Company', 'LLP', 'Partnership', 'Audit', 'Other'];
 
 const schema = z.object({
   clientName: z.string().min(2, 'Required'),
@@ -17,16 +19,18 @@ const schema = z.object({
   state: z.string().optional(),
   status: z.string().optional(),
   notes: z.string().optional(),
+  category: z
+    .array(z.enum(CATEGORIES))
+    .min(1, 'Select at least one service'),
 });
 
 const BUSINESS_TYPES = ['Proprietorship', 'Partnership', 'LLP', 'Private Limited', 'Public Limited', 'Trust', 'HUF', 'Other'];
-const CATEGORIES = ['GST', 'ITR', 'Company', 'LLP', 'Partnership', 'Audit', 'Other'];
 
 const ClientFormModal = ({ client, onSuccess, onClose }) => {
   const [loading, setLoading] = useState(false);
   const isEdit = !!client;
 
-  const { register, handleSubmit, formState: { errors }, reset, watch, setValue } = useForm({
+  const { register, handleSubmit, formState: { errors }, watch, setValue } = useForm({
     resolver: zodResolver(schema),
     defaultValues: client ? {
       clientName: client.clientName,
@@ -39,26 +43,31 @@ const ClientFormModal = ({ client, onSuccess, onClose }) => {
       state: client.state || '',
       status: client.status || 'Active',
       notes: client.notes || '',
-    } : { businessType: 'Proprietorship', status: 'Active' },
+      category: client.category || [],
+    } : {
+      businessType: 'Proprietorship',
+      status: 'Active',
+      category: [],
+    },
   });
 
-  const [selectedCategories, setSelectedCategories] = useState(client?.category || []);
+  const selectedCategories = watch('category') || [];
 
   const toggleCategory = (cat) => {
-    setSelectedCategories((prev) =>
-      prev.includes(cat) ? prev.filter((c) => c !== cat) : [...prev, cat]
-    );
+    const next = selectedCategories.includes(cat)
+      ? selectedCategories.filter((c) => c !== cat)
+      : [...selectedCategories, cat];
+    setValue('category', next, { shouldValidate: true, shouldDirty: true });
   };
 
   const onSubmit = async (data) => {
     setLoading(true);
     try {
-      const payload = { ...data, category: selectedCategories };
       if (isEdit) {
-        await clientApi.updateClient(client._id, payload);
+        await clientApi.updateClient(client._id, data);
         toast.success('Client updated');
       } else {
-        await clientApi.createClient(payload);
+        await clientApi.createClient(data);
         toast.success('Client created');
       }
       onSuccess();
@@ -115,6 +124,7 @@ const ClientFormModal = ({ client, onSuccess, onClose }) => {
             <select {...register('businessType')} className={`input ${errors.businessType ? 'input-error' : ''}`}>
               {BUSINESS_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
             </select>
+            {errors.businessType && <p className="error-text">{errors.businessType.message}</p>}
           </div>
           <div className="form-group">
             <label className="label">State</label>
@@ -130,13 +140,21 @@ const ClientFormModal = ({ client, onSuccess, onClose }) => {
         </div>
 
         <div className="form-group">
-          <label className="label">Services / Category</label>
-          <div className="flex flex-wrap gap-2 mt-1">
+          <label className="label">Services / Category *</label>
+          <div
+            className={`flex flex-wrap gap-2 mt-1 rounded-lg p-1 ${
+              errors.category ? 'ring-2 ring-red-400' : ''
+            }`}
+            role="group"
+            aria-required="true"
+            aria-invalid={!!errors.category}
+          >
             {CATEGORIES.map((cat) => (
               <button
                 key={cat}
                 type="button"
                 onClick={() => toggleCategory(cat)}
+                aria-pressed={selectedCategories.includes(cat)}
                 className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${
                   selectedCategories.includes(cat)
                     ? 'bg-forest text-parchment border-forest'
@@ -147,6 +165,7 @@ const ClientFormModal = ({ client, onSuccess, onClose }) => {
               </button>
             ))}
           </div>
+          {errors.category && <p className="error-text">{errors.category.message}</p>}
         </div>
 
         <div className="form-group">

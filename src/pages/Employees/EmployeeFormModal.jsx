@@ -1,9 +1,23 @@
 import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 import { useState } from 'react';
 import { Copy, Check } from 'lucide-react';
 import api from '../../api/axiosInstance';
 import Modal from '../../components/common/Modal';
 import toast from 'react-hot-toast';
+
+const createSchema = z.object({
+  name: z.string().min(2, 'Name is required'),
+  mobile: z.string().regex(/^[6-9]\d{9}$/, 'Enter a valid 10-digit mobile'),
+  email: z.string().email('Enter a valid email'),
+  designation: z.string().optional().or(z.literal('')),
+  department: z.string().optional().or(z.literal('')),
+});
+
+const updateSchema = createSchema.omit({ email: true }).extend({
+  email: z.string().email('Enter a valid email').optional().or(z.literal('')),
+});
 
 const EmployeeFormModal = ({ employee, onSuccess, onClose }) => {
   const [loading, setLoading] = useState(false);
@@ -11,7 +25,12 @@ const EmployeeFormModal = ({ employee, onSuccess, onClose }) => {
   const [copied, setCopied] = useState(false);
   const isEdit = !!employee;
 
-  const { register, handleSubmit, formState: { errors } } = useForm({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(isEdit ? updateSchema : createSchema),
     defaultValues: employee
       ? {
           name: employee.name,
@@ -20,7 +39,13 @@ const EmployeeFormModal = ({ employee, onSuccess, onClose }) => {
           designation: employee.designation || '',
           department: employee.department || '',
         }
-      : {},
+      : {
+          name: '',
+          mobile: '',
+          email: '',
+          designation: '',
+          department: '',
+        },
   });
 
   const onSubmit = async (data) => {
@@ -35,7 +60,6 @@ const EmployeeFormModal = ({ employee, onSuccess, onClose }) => {
         const { data: res } = await api.post('/employees', data);
         const payload = res.data;
         toast.success('Employee created. Credentials sent by email.');
-        // Show credentials panel (esp. useful in local/dev when SMTP is skipped)
         setInviteCreds({
           loginId: payload.loginId || data.email,
           temporaryPassword: payload.temporaryPassword || null,
@@ -80,14 +104,14 @@ const EmployeeFormModal = ({ employee, onSuccess, onClose }) => {
           <div className="rounded-xl border border-forest-100 bg-forest-50 p-4 space-y-2">
             <div>
               <p className="text-xs font-medium text-forest-500 uppercase tracking-wide">Login ID (Email)</p>
-              <p className="text-sm font-semibold font-mono text-forest mt-0.5">{inviteCreds.loginId}</p>
+              <p className="text-sm font-semibold font-mono text-forest mt-0.5 break-all">{inviteCreds.loginId}</p>
             </div>
             {inviteCreds.temporaryPassword && (
               <div>
                 <p className="text-xs font-medium text-amber-600 uppercase tracking-wide">
                   Temporary password (dev only)
                 </p>
-                <p className="text-sm font-mono font-semibold text-forest mt-0.5">
+                <p className="text-sm font-mono font-semibold text-forest mt-0.5 break-all">
                   {inviteCreds.temporaryPassword}
                 </p>
               </div>
@@ -121,25 +145,26 @@ const EmployeeFormModal = ({ employee, onSuccess, onClose }) => {
         </>
       }
     >
-      <form className="grid grid-cols-2 gap-4">
+      <form className="grid grid-cols-1 sm:grid-cols-2 gap-4" noValidate>
         {!isEdit && (
-          <div className="col-span-2 rounded-lg bg-forest-50 border border-forest-100 px-3 py-2.5 text-xs text-forest">
+          <div className="sm:col-span-2 rounded-lg bg-forest-50 border border-forest-100 px-3 py-2.5 text-xs text-forest">
             An employee login will be created. Login ID (email) and a temporary password will be sent to their inbox.
           </div>
         )}
-        <div className="form-group col-span-2">
+        <div className="form-group sm:col-span-2">
           <label className="label">Name *</label>
-          <input {...register('name', { required: 'Name is required', minLength: 2 })} className="input" placeholder="Full name" />
+          <input
+            {...register('name')}
+            className={`input ${errors.name ? 'input-error' : ''}`}
+            placeholder="Full name"
+          />
           {errors.name && <p className="error-text">{errors.name.message}</p>}
         </div>
         <div className="form-group">
           <label className="label">Mobile *</label>
           <input
-            {...register('mobile', {
-              required: 'Mobile is required',
-              pattern: { value: /^[6-9]\d{9}$/, message: 'Enter a valid 10-digit mobile' },
-            })}
-            className="input"
+            {...register('mobile')}
+            className={`input ${errors.mobile ? 'input-error' : ''}`}
             placeholder="9876543210"
           />
           {errors.mobile && <p className="error-text">{errors.mobile.message}</p>}
@@ -147,12 +172,9 @@ const EmployeeFormModal = ({ employee, onSuccess, onClose }) => {
         <div className="form-group">
           <label className="label">Email (Login ID) *</label>
           <input
-            {...register('email', {
-              required: !isEdit ? 'Email is required for login' : false,
-              pattern: { value: /^\S+@\S+\.\S+$/, message: 'Enter a valid email' },
-            })}
+            {...register('email')}
             type="email"
-            className="input"
+            className={`input ${errors.email ? 'input-error' : ''}`}
             placeholder="employee@office.com"
             disabled={isEdit}
           />

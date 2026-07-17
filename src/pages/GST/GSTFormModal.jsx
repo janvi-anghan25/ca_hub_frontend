@@ -7,15 +7,31 @@ import { clientApi } from '../../api/clientApi';
 import Modal from '../../components/common/Modal';
 import toast from 'react-hot-toast';
 
+const optionalMonth = z.preprocess(
+  (val) => {
+    if (val === '' || val === null || val === undefined || Number.isNaN(val)) return undefined;
+    return Number(val);
+  },
+  z.number().int().min(1).max(12).optional()
+);
+
+const optionalNonNegNumber = z.preprocess(
+  (val) => {
+    if (val === '' || val === null || val === undefined || Number.isNaN(val)) return undefined;
+    return Number(val);
+  },
+  z.number().min(0).optional()
+);
+
 const schema = z.object({
   client: z.string().min(1, 'Client is required'),
-  returnType: z.string().min(1, 'Return type required'),
-  periodYear: z.number().min(2020).max(2035),
-  periodMonth: z.number().min(1).max(12).optional(),
-  dueDate: z.string().min(1, 'Due date required'),
+  returnType: z.string().min(1, 'Return type is required'),
+  periodYear: z.coerce.number().min(2020, 'Year must be 2020 or later').max(2035, 'Year must be 2035 or earlier'),
+  periodMonth: optionalMonth,
+  dueDate: z.string().min(1, 'Due date is required'),
   filedDate: z.string().optional(),
-  status: z.string().min(1),
-  lateFee: z.number().min(0).optional(),
+  status: z.string().min(1, 'Status is required'),
+  lateFee: optionalNonNegNumber,
   notes: z.string().optional(),
 });
 
@@ -37,13 +53,22 @@ const GSTFormModal = ({ gstReturn, onSuccess, onClose }) => {
       client: gstReturn.client?._id || gstReturn.client,
       returnType: gstReturn.returnType,
       periodYear: gstReturn.period?.year,
-      periodMonth: gstReturn.period?.month,
+      // Empty string = "Not Applicable" (no month for annual returns like GSTR-9)
+      periodMonth: gstReturn.period?.month ?? '',
       dueDate: gstReturn.dueDate?.split('T')[0],
       filedDate: gstReturn.filedDate?.split('T')[0] || '',
       status: gstReturn.status,
       lateFee: gstReturn.lateFee || 0,
       notes: gstReturn.notes || '',
-    } : { status: 'Pending', periodYear: new Date().getFullYear() },
+    } : {
+      client: '',
+      returnType: 'GSTR-1',
+      status: 'Pending',
+      periodYear: new Date().getFullYear(),
+      periodMonth: '',
+      dueDate: '',
+      lateFee: 0,
+    },
   });
 
   const onSubmit = async (data) => {
@@ -52,11 +77,14 @@ const GSTFormModal = ({ gstReturn, onSuccess, onClose }) => {
       const payload = {
         client: data.client,
         returnType: data.returnType,
-        period: { year: Number(data.periodYear), month: data.periodMonth ? Number(data.periodMonth) : undefined },
+        period: {
+          year: Number(data.periodYear),
+          ...(data.periodMonth != null ? { month: Number(data.periodMonth) } : {}),
+        },
         dueDate: data.dueDate,
         filedDate: data.filedDate || undefined,
         status: data.status,
-        lateFee: data.lateFee || 0,
+        lateFee: data.lateFee ?? 0,
         notes: data.notes,
       };
 
@@ -87,7 +115,7 @@ const GSTFormModal = ({ gstReturn, onSuccess, onClose }) => {
         </>
       }
     >
-      <form className="space-y-4">
+      <form className="space-y-4" noValidate>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="form-group sm:col-span-2">
             <label className="label">Client *</label>
@@ -97,12 +125,14 @@ const GSTFormModal = ({ gstReturn, onSuccess, onClose }) => {
                 <option key={c._id} value={c._id}>{c.clientName} {c.firmName ? `(${c.firmName})` : ''}</option>
               ))}
             </select>
+            {errors.client && <p className="error-text">{errors.client.message}</p>}
           </div>
           <div className="form-group">
             <label className="label">Return Type *</label>
-            <select {...register('returnType')} className="input">
+            <select {...register('returnType')} className={`input ${errors.returnType ? 'input-error' : ''}`}>
               {RETURN_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
             </select>
+            {errors.returnType && <p className="error-text">{errors.returnType.message}</p>}
           </div>
           <div className="form-group">
             <label className="label">Status</label>
@@ -112,20 +142,23 @@ const GSTFormModal = ({ gstReturn, onSuccess, onClose }) => {
           </div>
           <div className="form-group">
             <label className="label">Year *</label>
-            <input {...register('periodYear', { valueAsNumber: true })} type="number" className="input" placeholder="2024" />
+            <input {...register('periodYear')} type="number" className={`input ${errors.periodYear ? 'input-error' : ''}`} placeholder="2024" />
+            {errors.periodYear && <p className="error-text">{errors.periodYear.message}</p>}
           </div>
           <div className="form-group">
             <label className="label">Month</label>
-            <select {...register('periodMonth', { valueAsNumber: true })} className="input">
+            <select {...register('periodMonth')} className={`input ${errors.periodMonth ? 'input-error' : ''}`}>
               <option value="">Not Applicable</option>
               {Array.from({ length: 12 }, (_, i) => (
                 <option key={i + 1} value={i + 1}>{new Date(2000, i).toLocaleString('default', { month: 'long' })}</option>
               ))}
             </select>
+            {errors.periodMonth && <p className="error-text">{errors.periodMonth.message}</p>}
           </div>
           <div className="form-group">
             <label className="label">Due Date *</label>
             <input {...register('dueDate')} type="date" className={`input ${errors.dueDate ? 'input-error' : ''}`} />
+            {errors.dueDate && <p className="error-text">{errors.dueDate.message}</p>}
           </div>
           <div className="form-group">
             <label className="label">Filed Date</label>
@@ -133,7 +166,7 @@ const GSTFormModal = ({ gstReturn, onSuccess, onClose }) => {
           </div>
           <div className="form-group">
             <label className="label">Late Fee (₹)</label>
-            <input {...register('lateFee', { valueAsNumber: true })} type="number" className="input" min="0" placeholder="0" />
+            <input {...register('lateFee')} type="number" className="input" min="0" placeholder="0" />
           </div>
         </div>
         <div className="form-group">

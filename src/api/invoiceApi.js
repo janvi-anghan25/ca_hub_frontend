@@ -6,6 +6,7 @@ export const invoiceApi = {
   createInvoice: (data) => api.post('/invoices', data),
   updateInvoice: (id, data) => api.put(`/invoices/${id}`, data),
   recordPayment: (id, data) => api.post(`/invoices/${id}/payments`, data),
+  getPayments: (params) => api.get('/invoices/payments', { params }),
   getRevenueStats: (params) => api.get('/invoices/stats/revenue', { params }),
   getMonthlyRevenue: (params) => api.get('/invoices/stats/monthly', { params }),
   getOverdue: () => api.get('/invoices/overdue'),

@@ -1,16 +1,39 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Plus, Edit2, Trash2 } from 'lucide-react';
+import { Plus, Upload, Edit2, Trash2 } from 'lucide-react';
 import { itrApi } from '../../api/itrApi';
 import { SectionLoader } from '../../components/common/LoadingSpinner';
 import Pagination from '../../components/common/Pagination';
 import StatusBadge from '../../components/common/StatusBadge';
 import EmptyState from '../../components/common/EmptyState';
 import ConfirmDialog from '../../components/common/ConfirmDialog';
+import ImportModal from '../../components/common/ImportModal';
 import ITRFormModal from './ITRFormModal';
 import { format, isPast } from 'date-fns';
 import toast from 'react-hot-toast';
 
 const STATUSES = ['Pending', 'Data Received', 'In Progress', 'Filed', 'Late Filed', 'Revised'];
+
+const ITR_IMPORT_COLUMNS = [
+  { key: 'clientName', example: 'Ravi Kumar' },
+  { key: 'mobile', example: '9876543210' },
+  { key: 'panNumber', example: 'ABCDE1234F' },
+  { key: 'businessType', example: 'Proprietorship' },
+  { key: 'formType', required: true, example: 'ITR-3' },
+  { key: 'assessmentYear', required: true, example: '2025-26' },
+  { key: 'financialYear', required: true, example: '2024-25' },
+  { key: 'dueDate', required: true, example: '2025-07-31' },
+  { key: 'status', example: 'Pending' },
+  { key: 'filedDate', example: '' },
+  { key: 'refundStatus', example: 'Not Applicable' },
+  { key: 'grossIncome', example: '800000' },
+  { key: 'taxableIncome', example: '650000' },
+  { key: 'taxPaid', example: '42000' },
+  { key: 'taxLiability', example: '42000' },
+  { key: 'refundAmount', example: '' },
+  { key: 'lateFee', example: '' },
+  { key: 'acknowledgementNumber', example: '' },
+  { key: 'notes', example: '' },
+];
 
 const ITRPage = () => {
   const [returns, setReturns] = useState([]);
@@ -19,6 +42,7 @@ const ITRPage = () => {
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState('');
   const [showForm, setShowForm] = useState(false);
+  const [showImport, setShowImport] = useState(false);
   const [editReturn, setEditReturn] = useState(null);
   const [deleteId, setDeleteId] = useState(null);
   const [deleting, setDeleting] = useState(false);
@@ -71,16 +95,23 @@ const ITRPage = () => {
             <span className="badge badge-blue">{summary.refundPending} refund pending</span>
           </div>
         </div>
-        <button className="btn-primary" onClick={() => { setEditReturn(null); setShowForm(true); }}>
-          <Plus size={16} /> Add ITR
-        </button>
+        <div className="page-header-actions">
+          <button className="btn-secondary" onClick={() => setShowImport(true)}>
+            <Upload size={16} /> Import
+          </button>
+          <button className="btn-primary" onClick={() => { setEditReturn(null); setShowForm(true); }}>
+            <Plus size={16} /> Add ITR
+          </button>
+        </div>
       </div>
 
       <div className="card mb-4">
-        <select className="input w-auto min-w-40" value={statusFilter} onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}>
-          <option value="">All Status</option>
-          {STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
-        </select>
+        <div className="filter-bar">
+          <select className="input sm:min-w-40" value={statusFilter} onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}>
+            <option value="">All Status</option>
+            {STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
+          </select>
+        </div>
       </div>
 
       <div className="card p-0">
@@ -139,6 +170,16 @@ const ITRPage = () => {
 
       {showForm && (
         <ITRFormModal itrReturn={editReturn} onSuccess={() => { setShowForm(false); setEditReturn(null); load(); }} onClose={() => { setShowForm(false); setEditReturn(null); }} />
+      )}
+      {showImport && (
+        <ImportModal
+          title="Import ITR Records"
+          columns={ITR_IMPORT_COLUMNS}
+          templateName="itr-returns-template"
+          onImport={itrApi.importReturns}
+          onImported={load}
+          onClose={() => setShowImport(false)}
+        />
       )}
       <ConfirmDialog isOpen={!!deleteId} onClose={() => setDeleteId(null)} onConfirm={handleDelete} loading={deleting} />
     </div>

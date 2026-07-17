@@ -46,7 +46,7 @@ const InvoicePage = () => {
         <div>
           <h1 className="page-title">Invoices</h1>
           {stats && (
-            <div className="flex items-center gap-3 mt-1 text-xs text-forest-400">
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1 text-xs text-forest-400">
               <span>Total: <strong className="font-mono text-forest">₹{stats.totalRevenue?.toLocaleString('en-IN')}</strong></span>
               <span>Collected: <strong className="font-mono text-emerald-600">₹{stats.totalPaid?.toLocaleString('en-IN')}</strong></span>
               <span>Pending: <strong className="font-mono text-red-600">₹{stats.totalPending?.toLocaleString('en-IN')}</strong></span>
@@ -59,7 +59,7 @@ const InvoicePage = () => {
       </div>
 
       <div className="card mb-4">
-        <div className="flex gap-3 flex-wrap">
+        <div className="flex gap-2 flex-wrap">
           {['', ...PAYMENT_STATUSES].map((s) => (
             <button
               key={s || 'all'}

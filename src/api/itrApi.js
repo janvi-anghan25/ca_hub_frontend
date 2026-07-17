@@ -9,4 +9,6 @@ export const itrApi = {
   getPending: (params) => api.get('/itr-returns/pending', { params }),
   getOverdue: () => api.get('/itr-returns/overdue'),
   getRefundPending: () => api.get('/itr-returns/refund-pending'),
+  importReturns: (formData) =>
+    api.post('/itr-returns/import', formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
 };

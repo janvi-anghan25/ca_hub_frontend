@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Bell, CheckCheck, Info } from 'lucide-react';
-import api from '../../api/axiosInstance';
+import { notificationApi } from '../../api/notificationApi';
 import { SectionLoader } from '../../components/common/LoadingSpinner';
 import EmptyState from '../../components/common/EmptyState';
 import { formatDistanceToNow } from 'date-fns';
@@ -13,7 +13,7 @@ const NotificationsPage = () => {
   const load = async () => {
     setLoading(true);
     try {
-      const { data } = await api.get('/notifications', { params: { limit: 50 } });
+      const { data } = await notificationApi.getAll({ limit: 50 });
       setNotifications(data.data);
     } finally {
       setLoading(false);
@@ -23,13 +23,13 @@ const NotificationsPage = () => {
   useEffect(() => { load(); }, []);
 
   const markAllRead = async () => {
-    await api.put('/notifications/mark-all-read');
+    await notificationApi.markAllRead();
     toast.success('All marked as read');
     load();
   };
 
   const markRead = async (id) => {
-    await api.put(`/notifications/${id}/read`);
+    await notificationApi.markRead(id);
     load();
   };
 

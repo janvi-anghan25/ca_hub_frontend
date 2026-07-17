@@ -1,17 +1,38 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Plus, Search, Edit2, Trash2, AlertCircle, CheckCircle } from 'lucide-react';
+import { Plus, Upload, Edit2, Trash2 } from 'lucide-react';
 import { gstApi } from '../../api/gstApi';
 import { SectionLoader } from '../../components/common/LoadingSpinner';
 import Pagination from '../../components/common/Pagination';
 import StatusBadge from '../../components/common/StatusBadge';
 import EmptyState from '../../components/common/EmptyState';
 import ConfirmDialog from '../../components/common/ConfirmDialog';
+import ImportModal from '../../components/common/ImportModal';
 import GSTFormModal from './GSTFormModal';
 import { format, isPast, isToday } from 'date-fns';
 import toast from 'react-hot-toast';
 
 const RETURN_TYPES = ['GSTR-1', 'GSTR-3B', 'GSTR-9', 'GSTR-9C', 'CMP-08', 'Other'];
 const STATUSES = ['Pending', 'Data Received', 'In Progress', 'Filed', 'Late Filed'];
+
+const GST_IMPORT_COLUMNS = [
+  { key: 'clientName', example: 'Acme Traders' },
+  { key: 'mobile', example: '9876543210' },
+  { key: 'gstNumber', example: '27AAECA1234A1Z5' },
+  { key: 'businessType', example: 'Proprietorship' },
+  { key: 'returnType', required: true, example: 'GSTR-3B' },
+  { key: 'year', required: true, example: '2025' },
+  { key: 'month', example: '4' },
+  { key: 'quarter', example: '' },
+  { key: 'dueDate', required: true, example: '2025-05-20' },
+  { key: 'status', example: 'Pending' },
+  { key: 'filedDate', example: '' },
+  { key: 'taxableAmount', example: '100000' },
+  { key: 'taxAmount', example: '18000' },
+  { key: 'lateFee', example: '' },
+  { key: 'interest', example: '' },
+  { key: 'acknowledgementNumber', example: '' },
+  { key: 'notes', example: '' },
+];
 
 const GSTPage = () => {
   const [returns, setReturns] = useState([]);
@@ -21,6 +42,7 @@ const GSTPage = () => {
   const [statusFilter, setStatusFilter] = useState('');
   const [typeFilter, setTypeFilter] = useState('');
   const [showForm, setShowForm] = useState(false);
+  const [showImport, setShowImport] = useState(false);
   const [editReturn, setEditReturn] = useState(null);
   const [deleteId, setDeleteId] = useState(null);
   const [deleting, setDeleting] = useState(false);
@@ -75,19 +97,24 @@ const GSTPage = () => {
             <span className="badge badge-red">{summary.overdue} overdue</span>
           </div>
         </div>
-        <button className="btn-primary" onClick={() => { setEditReturn(null); setShowForm(true); }}>
-          <Plus size={16} /> Add Return
-        </button>
+        <div className="page-header-actions">
+          <button className="btn-secondary" onClick={() => setShowImport(true)}>
+            <Upload size={16} /> Import
+          </button>
+          <button className="btn-primary" onClick={() => { setEditReturn(null); setShowForm(true); }}>
+            <Plus size={16} /> Add Return
+          </button>
+        </div>
       </div>
 
       {/* Filters */}
       <div className="card mb-4">
-        <div className="flex flex-wrap gap-3">
-          <select className="input w-auto min-w-36" value={statusFilter} onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}>
+        <div className="filter-bar">
+          <select className="input sm:min-w-36" value={statusFilter} onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}>
             <option value="">All Status</option>
             {STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
           </select>
-          <select className="input w-auto min-w-36" value={typeFilter} onChange={(e) => { setTypeFilter(e.target.value); setPage(1); }}>
+          <select className="input sm:min-w-36" value={typeFilter} onChange={(e) => { setTypeFilter(e.target.value); setPage(1); }}>
             <option value="">All Types</option>
             {RETURN_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
           </select>
@@ -163,6 +190,16 @@ const GSTPage = () => {
           gstReturn={editReturn}
           onSuccess={() => { setShowForm(false); setEditReturn(null); loadReturns(); }}
           onClose={() => { setShowForm(false); setEditReturn(null); }}
+        />
+      )}
+      {showImport && (
+        <ImportModal
+          title="Import GST Returns"
+          columns={GST_IMPORT_COLUMNS}
+          templateName="gst-returns-template"
+          onImport={gstApi.importReturns}
+          onImported={loadReturns}
+          onClose={() => setShowImport(false)}
         />
       )}
       <ConfirmDialog isOpen={!!deleteId} onClose={() => setDeleteId(null)} onConfirm={handleDelete} loading={deleting} />

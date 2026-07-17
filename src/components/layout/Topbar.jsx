@@ -5,11 +5,11 @@ const Topbar = ({ title }) => {
   const navigate = useNavigate();
 
   return (
-    <header className="sticky top-0 z-10 bg-white/95 backdrop-blur border-b border-forest-200 px-4 sm:px-6 py-3 flex items-center justify-between gap-4">
-      <div>
+    <header className="sticky top-0 z-10 bg-white/95 backdrop-blur border-b border-forest-200 px-3 sm:px-6 py-3 flex items-center justify-between gap-3">
+      <div className="min-w-0">
         {title && (
           <>
-            <h1 className="page-title text-xl sm:text-2xl">{title}</h1>
+            <h1 className="page-title text-lg sm:text-2xl truncate">{title}</h1>
             <div className="page-title-rule" />
           </>
         )}
@@ -17,7 +17,7 @@ const Topbar = ({ title }) => {
       <button
         type="button"
         onClick={() => navigate('/notifications')}
-        className="relative p-2 rounded-lg hover:bg-forest-50 text-forest-400 transition-colors"
+        className="relative p-2 rounded-lg hover:bg-forest-50 text-forest-400 transition-colors flex-shrink-0"
         aria-label="Notifications"
       >
         <Bell size={20} />

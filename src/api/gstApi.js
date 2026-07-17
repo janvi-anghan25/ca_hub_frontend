@@ -9,4 +9,6 @@ export const gstApi = {
   getPending: (params) => api.get('/gst-returns/pending', { params }),
   getOverdue: () => api.get('/gst-returns/overdue'),
   getMonthlyStats: (params) => api.get('/gst-returns/stats/monthly', { params }),
+  importReturns: (formData) =>
+    api.post('/gst-returns/import', formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
 };

@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
-import { CreditCard, TrendingUp } from 'lucide-react';
-import api from '../../api/axiosInstance';
+import { CreditCard } from 'lucide-react';
+import { invoiceApi } from '../../api/invoiceApi';
 import { SectionLoader } from '../../components/common/LoadingSpinner';
 import Pagination from '../../components/common/Pagination';
 import EmptyState from '../../components/common/EmptyState';
@@ -29,15 +29,17 @@ const PaymentsPage = () => {
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const { data } = await api.get('/invoices/stats/revenue');
-      setStats(data.data?.[0]);
-      const payments = await api.get('/invoices', { params: { paymentStatus: 'Paid', page, limit: LIMIT } });
-      setPayments(payments.data.data);
-      setTotal(payments.data.meta.total);
+      const [statsRes, payRes] = await Promise.all([
+        invoiceApi.getRevenueStats({}),
+        invoiceApi.getPayments({ paymentMode: modeFilter || undefined, page, limit: LIMIT }),
+      ]);
+      setStats(statsRes.data.data?.[0]);
+      setPayments(payRes.data.data);
+      setTotal(payRes.data.meta.total);
     } finally {
       setLoading(false);
     }
-  }, [page]);
+  }, [modeFilter, page]);
 
   useEffect(() => { load(); }, [load]);
 
@@ -62,31 +64,50 @@ const PaymentsPage = () => {
         </div>
       )}
 
+      <div className="card mb-4">
+        <div className="flex gap-3 flex-wrap">
+          {['', ...PAYMENT_MODES].map((m) => (
+            <button
+              key={m || 'all'}
+              onClick={() => { setModeFilter(m); setPage(1); }}
+              className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${
+                modeFilter === m ? 'bg-forest text-parchment border-forest' : 'bg-white text-forest-400 border-forest-200 hover:border-forest-400'
+              }`}
+            >
+              {m || 'All'}
+            </button>
+          ))}
+        </div>
+      </div>
+
       <div className="card p-0">
         {loading ? <SectionLoader /> : payments.length === 0 ? (
-          <EmptyState icon={CreditCard} title="No payments recorded" />
+          <EmptyState icon={CreditCard} title="No payments recorded" description="Record a payment against an invoice to see receipts here" />
         ) : (
           <div className="table-container">
             <table className="table">
               <thead>
                 <tr>
+                  <th>Receipt #</th>
                   <th>Client</th>
                   <th>Invoice #</th>
                   <th>Amount</th>
+                  <th>Mode</th>
                   <th>Date</th>
-                  <th>Status</th>
                 </tr>
               </thead>
               <tbody>
-                {payments.map((inv) => (
-                  <tr key={inv._id}>
+                {payments.map((p) => (
+                  <tr key={p._id}>
+                    <td className="font-mono text-sm font-semibold text-forest">{p.receiptNumber || '—'}</td>
                     <td>
-                      <p className="font-medium text-sm text-forest">{inv.client?.clientName}</p>
+                      <p className="font-medium text-sm text-forest">{p.client?.clientName || '—'}</p>
+                      {p.client?.firmName && <p className="text-xs text-forest-400">{p.client.firmName}</p>}
                     </td>
-                    <td className="font-mono text-sm text-forest">{inv.invoiceNumber}</td>
-                    <td className="text-sm font-semibold font-mono text-forest">₹{inv.totalAmount?.toLocaleString('en-IN')}</td>
-                    <td className="text-sm text-forest-400">{format(new Date(inv.invoiceDate), 'dd MMM yyyy')}</td>
-                    <td><span className="badge badge-green">Paid</span></td>
+                    <td className="font-mono text-sm text-forest-400">{p.invoice?.invoiceNumber || '—'}</td>
+                    <td className="text-sm font-semibold font-mono text-emerald-600">₹{p.amount?.toLocaleString('en-IN')}</td>
+                    <td><span className={`badge ${MODE_COLORS[p.paymentMode] || 'badge-gray'}`}>{p.paymentMode}</span></td>
+                    <td className="text-sm text-forest-400">{p.paymentDate ? format(new Date(p.paymentDate), 'dd MMM yyyy') : '—'}</td>
                   </tr>
                 ))}
               </tbody>

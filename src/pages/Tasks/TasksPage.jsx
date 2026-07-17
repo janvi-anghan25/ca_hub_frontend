@@ -69,12 +69,12 @@ const TasksPage = () => {
       </div>
 
       <div className="card mb-4">
-        <div className="flex flex-wrap gap-3">
-          <select className="input w-auto min-w-32" value={statusFilter} onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}>
+        <div className="filter-bar">
+          <select className="input sm:min-w-32" value={statusFilter} onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}>
             <option value="">All Status</option>
             {STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
           </select>
-          <select className="input w-auto min-w-32" value={priorityFilter} onChange={(e) => { setPriorityFilter(e.target.value); setPage(1); }}>
+          <select className="input sm:min-w-32" value={priorityFilter} onChange={(e) => { setPriorityFilter(e.target.value); setPage(1); }}>
             <option value="">All Priority</option>
             {PRIORITIES.map((p) => <option key={p} value={p}>{p}</option>)}
           </select>

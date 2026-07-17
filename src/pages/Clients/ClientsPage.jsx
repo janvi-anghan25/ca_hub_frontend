@@ -84,23 +84,23 @@ const ClientsPage = () => {
 
       {/* Filters */}
       <div className="card mb-4">
-        <div className="flex flex-col sm:flex-row gap-3">
-          <div className="flex-1 relative">
-            <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+        <div className="filter-bar">
+          <div className="flex-1 relative min-w-0">
+            <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-forest-400" />
             <input
               type="text"
               placeholder="Search by name, GST, PAN, mobile..."
-              className="input pl-9"
+              className="input pl-9 w-full"
               value={search}
               onChange={(e) => { setSearch(e.target.value); setPage(1); }}
             />
           </div>
-          <select className="input w-auto min-w-32" value={statusFilter} onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}>
+          <select className="input sm:min-w-32" value={statusFilter} onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}>
             <option value="">All Status</option>
             <option value="Active">Active</option>
             <option value="Inactive">Inactive</option>
           </select>
-          <select className="input w-auto min-w-36" value={categoryFilter} onChange={(e) => { setCategoryFilter(e.target.value); setPage(1); }}>
+          <select className="input sm:min-w-36" value={categoryFilter} onChange={(e) => { setCategoryFilter(e.target.value); setPage(1); }}>
             <option value="">All Category</option>
             {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
           </select>
@@ -218,7 +218,7 @@ const ClientsPage = () => {
         />
       )}
       {viewClient && (
-        <ClientDetailModal client={viewClient} onClose={() => setViewClient(null)} />
+        <ClientDetailModal client={viewClient} onClose={() => setViewClient(null)} onUpdated={loadClients} />
       )}
       <ConfirmDialog
         isOpen={!!deleteId}

@@ -35,8 +35,15 @@ const IconRailShell = ({
     return visibleGroups[0]?.id ?? null;
   }, [location.pathname, visibleGroups]);
 
+  // Keep flyout mounted across in-app navigation — only close the mobile sheet.
+  // Sync open group when the route lands in a different section (no close→reopen cycle).
   useEffect(() => {
-    setOpenGroupId(activeGroupId);
+    setOpenGroupId((current) => {
+      if (!activeGroupId) return current;
+      if (current === null) return activeGroupId;
+      if (current !== activeGroupId) return activeGroupId;
+      return current;
+    });
     setMobileOpen(false);
   }, [location.pathname, activeGroupId]);
 
@@ -51,8 +58,6 @@ const IconRailShell = ({
 
   const openGroup = visibleGroups.find((g) => g.id === openGroupId) ?? null;
   const flyoutId = openGroup ? `rail-flyout-${openGroup.id}` : undefined;
-
-  const closeFlyout = () => setOpenGroupId(null);
 
   const FlyoutLinks = ({ onNavigate, showHeader = true }) => (
     <div className="flex flex-col h-full">
@@ -141,16 +146,17 @@ const IconRailShell = ({
           className="hidden lg:flex flex-col w-52 bg-forest-500 text-parchment shadow-rail flex-shrink-0 z-20"
           aria-label={`${openGroup.label} menu`}
         >
-          <FlyoutLinks onNavigate={closeFlyout} />
+          {/* Desktop: navigate only — keep flyout open so the shell does not reload */}
+          <FlyoutLinks />
         </aside>
       )}
 
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden" onClick={closeFlyout}>
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         {children}
       </div>
 
       <nav
-        className="lg:hidden fixed bottom-0 inset-x-0 z-30 bg-forest border-t border-white/10 flex justify-around px-1 py-1.5 pb-[max(0.375rem,env(safe-area-inset-bottom))]"
+        className="lg:hidden fixed bottom-0 inset-x-0 z-30 bg-forest border-t border-white/10 flex justify-around gap-0.5 px-0.5 py-1.5 pb-[max(0.375rem,env(safe-area-inset-bottom))] overflow-x-auto"
         aria-label="Sections"
       >
         {visibleGroups.map((group) => {
@@ -166,12 +172,12 @@ const IconRailShell = ({
                 setOpenGroupId(group.id);
                 setMobileOpen(true);
               }}
-              className={`flex flex-col items-center gap-0.5 min-w-[3.25rem] py-1 rounded-lg ${
+              className={`flex flex-col items-center gap-0.5 min-w-[3rem] max-w-[4.5rem] flex-1 py-1.5 px-0.5 rounded-lg ${
                 active ? 'text-brass' : 'text-forest-300'
               }`}
             >
               <Icon size={18} aria-hidden />
-              <span className="text-[9px] font-medium">{group.label}</span>
+              <span className="text-[9px] font-medium truncate w-full text-center leading-tight">{group.label}</span>
             </button>
           );
         })}

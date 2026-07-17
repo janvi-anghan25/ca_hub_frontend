@@ -79,7 +79,7 @@ const ReportsPage = () => {
           </div>
 
           {/* Summary Cards */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {[
               { label: 'Total Invoiced', value: `₹${revenueData.reduce((s, d) => s + d.invoiced, 0).toLocaleString('en-IN')}`, color: 'text-forest-500', bg: 'bg-forest-50' },
               { label: 'Total Collected', value: `₹${revenueData.reduce((s, d) => s + d.collected, 0).toLocaleString('en-IN')}`, color: 'text-emerald-600', bg: 'bg-emerald-50' },

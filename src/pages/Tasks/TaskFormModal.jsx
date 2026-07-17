@@ -1,4 +1,6 @@
 import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 import { useState, useEffect } from 'react';
 import { taskApi } from '../../api/taskApi';
 import { clientApi } from '../../api/clientApi';
@@ -9,6 +11,16 @@ const CATEGORIES = ['GST', 'ITR', 'Audit', 'ROC', 'TDS', 'General', 'Other'];
 const PRIORITIES = ['Low', 'Medium', 'High', 'Urgent'];
 const STATUSES = ['Todo', 'In Progress', 'Review', 'Done', 'Cancelled'];
 
+const schema = z.object({
+  title: z.string().min(2, 'Title is required'),
+  description: z.string().optional().or(z.literal('')),
+  client: z.string().optional().or(z.literal('')),
+  category: z.enum(CATEGORIES),
+  priority: z.enum(PRIORITIES),
+  status: z.enum(STATUSES),
+  dueDate: z.string().optional().or(z.literal('')),
+});
+
 const TaskFormModal = ({ task, onSuccess, onClose }) => {
   const [loading, setLoading] = useState(false);
   const [clients, setClients] = useState([]);
@@ -18,7 +30,12 @@ const TaskFormModal = ({ task, onSuccess, onClose }) => {
     clientApi.getClients({ limit: 200 }).then(({ data }) => setClients(data.data));
   }, []);
 
-  const { register, handleSubmit } = useForm({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(schema),
     defaultValues: task ? {
       title: task.title,
       description: task.description || '',
@@ -27,17 +44,30 @@ const TaskFormModal = ({ task, onSuccess, onClose }) => {
       priority: task.priority,
       status: task.status,
       dueDate: task.dueDate?.split('T')[0] || '',
-    } : { priority: 'Medium', status: 'Todo', category: 'General' },
+    } : {
+      title: '',
+      description: '',
+      client: '',
+      priority: 'Medium',
+      status: 'Todo',
+      category: 'General',
+      dueDate: '',
+    },
   });
 
   const onSubmit = async (data) => {
     setLoading(true);
     try {
+      const payload = {
+        ...data,
+        client: data.client || undefined,
+        dueDate: data.dueDate || undefined,
+      };
       if (isEdit) {
-        await taskApi.updateTask(task._id, data);
+        await taskApi.updateTask(task._id, payload);
         toast.success('Task updated');
       } else {
-        await taskApi.createTask(data);
+        await taskApi.createTask(payload);
         toast.success('Task created');
       }
       onSuccess();
@@ -47,7 +77,11 @@ const TaskFormModal = ({ task, onSuccess, onClose }) => {
   };
 
   return (
-    <Modal isOpen onClose={onClose} title={isEdit ? 'Edit Task' : 'Add Task'} size="md"
+    <Modal
+      isOpen
+      onClose={onClose}
+      title={isEdit ? 'Edit Task' : 'Add Task'}
+      size="md"
       footer={
         <>
           <button className="btn-secondary" onClick={onClose} disabled={loading}>Cancel</button>
@@ -57,12 +91,17 @@ const TaskFormModal = ({ task, onSuccess, onClose }) => {
         </>
       }
     >
-      <form className="space-y-4">
+      <form className="space-y-4" noValidate>
         <div className="form-group">
           <label className="label">Title *</label>
-          <input {...register('title')} className="input" placeholder="Task description" />
+          <input
+            {...register('title')}
+            className={`input ${errors.title ? 'input-error' : ''}`}
+            placeholder="Task description"
+          />
+          {errors.title && <p className="error-text">{errors.title.message}</p>}
         </div>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div className="form-group">
             <label className="label">Category</label>
             <select {...register('category')} className="input">

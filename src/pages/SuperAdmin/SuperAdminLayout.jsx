@@ -28,7 +28,7 @@ const SuperAdminLayout = () => {
         <h1 className="page-title text-xl sm:text-2xl">{title}</h1>
         <div className="page-title-rule" />
       </header>
-      <main className="flex-1 overflow-y-auto p-4 sm:p-6 pb-24 lg:pb-6">
+      <main className="app-shell-main flex-1 overflow-y-auto p-3 sm:p-6 pb-24 lg:pb-6">
         <Outlet />
       </main>
     </IconRailShell>

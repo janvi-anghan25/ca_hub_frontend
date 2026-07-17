@@ -27,6 +27,10 @@ const EmployeesPage = lazy(() => import('./pages/Employees/EmployeesPage'));
 const ReportsPage = lazy(() => import('./pages/Reports/ReportsPage'));
 const PaymentsPage = lazy(() => import('./pages/Payment/PaymentsPage'));
 
+// Full-feature pages (previously placeholders)
+const CalendarPage = lazy(() => import('./pages/Calendar/CalendarPage'));
+const SettingsPage = lazy(() => import('./pages/Settings/SettingsPage'));
+
 // Super Admin pages
 const SuperAdminLayout = lazy(() => import('./pages/SuperAdmin/SuperAdminLayout'));
 const SuperAdminDashboard = lazy(() => import('./pages/SuperAdmin/SuperAdminDashboard'));
@@ -113,8 +117,8 @@ const App = () => {
           <Route path="tasks" element={<TasksPage />} />
           <Route path="notifications" element={<NotificationsPage />} />
           <Route path="documents" element={<DocumentsPage />} />
-          <Route path="calendar" element={<DashboardPage />} />
-          <Route path="settings" element={<DashboardPage />} />
+          <Route path="calendar" element={<CalendarPage />} />
+          <Route path="settings" element={<SettingsPage />} />
           <Route path="invoices" element={<InvoicePage />} />
           <Route
             path="employees"
