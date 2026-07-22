@@ -21,12 +21,15 @@ const schema = z.object({
   priority: z.enum(PRIORITIES),
   status: z.enum(STATUSES),
   dueDate: z.string().optional().or(z.literal('')),
+  estimatedHours: z.coerce.number().optional().or(z.literal('')),
 });
 
 const TaskFormModal = ({ task, onSuccess, onClose }) => {
   const [loading, setLoading] = useState(false);
   const [clients, setClients] = useState([]);
   const [employees, setEmployees] = useState([]);
+  const [subtasks, setSubtasks] = useState(task?.subtasks || []);
+  const [newSubtaskTitle, setNewSubtaskTitle] = useState('');
   const isEdit = !!task;
 
   useEffect(() => {
@@ -49,6 +52,7 @@ const TaskFormModal = ({ task, onSuccess, onClose }) => {
       priority: task.priority,
       status: task.status,
       dueDate: task.dueDate?.split('T')[0] || '',
+      estimatedHours: task.estimatedHours || '',
     } : {
       title: '',
       description: '',
@@ -58,8 +62,19 @@ const TaskFormModal = ({ task, onSuccess, onClose }) => {
       status: 'Todo',
       category: 'General',
       dueDate: '',
+      estimatedHours: '',
     },
   });
+
+  const addSubtask = () => {
+    if (!newSubtaskTitle.trim()) return;
+    setSubtasks([...subtasks, { title: newSubtaskTitle.trim(), isCompleted: false }]);
+    setNewSubtaskTitle('');
+  };
+
+  const removeSubtask = (index) => {
+    setSubtasks(subtasks.filter((_, i) => i !== index));
+  };
 
   const onSubmit = async (data) => {
     setLoading(true);
@@ -69,6 +84,8 @@ const TaskFormModal = ({ task, onSuccess, onClose }) => {
         client: data.client || undefined,
         assignedTo: data.assignedTo || undefined,
         dueDate: data.dueDate || undefined,
+        estimatedHours: data.estimatedHours ? Number(data.estimatedHours) : undefined,
+        subtasks,
       };
       if (isEdit) {
         await taskApi.updateTask(task._id, payload);
@@ -88,7 +105,7 @@ const TaskFormModal = ({ task, onSuccess, onClose }) => {
       isOpen
       onClose={onClose}
       title={isEdit ? 'Edit Task' : 'Add Task'}
-      size="md"
+      size="lg"
       footer={
         <>
           <button className="btn-secondary" onClick={onClose} disabled={loading}>Cancel</button>
@@ -104,11 +121,12 @@ const TaskFormModal = ({ task, onSuccess, onClose }) => {
           <input
             {...register('title')}
             className={`input ${errors.title ? 'input-error' : ''}`}
-            placeholder="Task description"
+            placeholder="Task title (e.g. File GSTR-3B for June)"
           />
           {errors.title && <p className="error-text">{errors.title.message}</p>}
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div className="form-group">
             <label className="label">Category</label>
             <select {...register('category')} className="input">
@@ -127,12 +145,13 @@ const TaskFormModal = ({ task, onSuccess, onClose }) => {
               {STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
             </select>
           </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div className="form-group">
             <label className="label">Due Date</label>
             <input {...register('dueDate')} type="date" className="input" />
           </div>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div className="form-group">
             <label className="label">Client</label>
             <select {...register('client')} className="input">
@@ -141,16 +160,52 @@ const TaskFormModal = ({ task, onSuccess, onClose }) => {
             </select>
           </div>
           <div className="form-group">
-            <label className="label">Assigned To Employee</label>
+            <label className="label">Assigned Employee</label>
             <select {...register('assignedTo')} className="input">
               <option value="">Unassigned</option>
-              {employees.map((e) => <option key={e._id} value={e._id}>{e.name} ({e.designation || 'Staff'})</option>)}
+              {employees.map((e) => <option key={e._id} value={e._id}>{e.name}</option>)}
             </select>
           </div>
         </div>
+
+        <div className="form-group">
+          <label className="label">Estimated Hours</label>
+          <input {...register('estimatedHours')} type="number" step="0.5" className="input" placeholder="e.g. 4" />
+        </div>
+
+        {/* Subtask Checklist Creator */}
+        <div className="form-group border-t border-forest-100 pt-3">
+          <label className="label">Subtasks Checklist</label>
+          <div className="flex gap-2 mb-2">
+            <input
+              type="text"
+              className="input flex-1"
+              placeholder="Add step (e.g. 1. Collect bank statement)"
+              value={newSubtaskTitle}
+              onChange={(e) => setNewSubtaskTitle(e.target.value)}
+              onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addSubtask(); } }}
+            />
+            <button type="button" onClick={addSubtask} className="btn-secondary whitespace-nowrap">
+              Add Step
+            </button>
+          </div>
+          {subtasks.length > 0 && (
+            <ul className="space-y-1.5 max-h-36 overflow-y-auto">
+              {subtasks.map((st, i) => (
+                <li key={i} className="flex items-center justify-between bg-forest-50/50 dark:bg-forest-900/30 px-3 py-1.5 rounded-lg text-sm">
+                  <span className="text-forest">{st.title}</span>
+                  <button type="button" onClick={() => removeSubtask(i)} className="text-red-500 hover:text-red-700 text-xs font-semibold">
+                    Remove
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+
         <div className="form-group">
           <label className="label">Description</label>
-          <textarea {...register('description')} className="input" rows={3} />
+          <textarea {...register('description')} className="input" rows={2} placeholder="Add additional instructions..." />
         </div>
       </form>
     </Modal>
