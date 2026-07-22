@@ -424,7 +424,7 @@ const SecurityTab = () => {
         </button>
       </form>
 
-      <div className="card bg-amber-50 border border-amber-100">
+      {/* <div className="card bg-amber-50 border border-amber-100">
         <div className="flex items-start gap-3">
           <div className="p-2 bg-amber-100 rounded-lg flex-shrink-0 mt-0.5">
             <CheckCircle2 size={16} className="text-amber-600" />
@@ -437,7 +437,7 @@ const SecurityTab = () => {
             </p>
           </div>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };

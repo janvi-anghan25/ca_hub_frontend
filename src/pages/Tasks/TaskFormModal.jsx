@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { useState, useEffect } from 'react';
 import { taskApi } from '../../api/taskApi';
 import { clientApi } from '../../api/clientApi';
+import { employeeApi } from '../../api/employeeApi';
 import Modal from '../../components/common/Modal';
 import toast from 'react-hot-toast';
 
@@ -15,6 +16,7 @@ const schema = z.object({
   title: z.string().min(2, 'Title is required'),
   description: z.string().optional().or(z.literal('')),
   client: z.string().optional().or(z.literal('')),
+  assignedTo: z.string().optional().or(z.literal('')),
   category: z.enum(CATEGORIES),
   priority: z.enum(PRIORITIES),
   status: z.enum(STATUSES),
@@ -24,10 +26,12 @@ const schema = z.object({
 const TaskFormModal = ({ task, onSuccess, onClose }) => {
   const [loading, setLoading] = useState(false);
   const [clients, setClients] = useState([]);
+  const [employees, setEmployees] = useState([]);
   const isEdit = !!task;
 
   useEffect(() => {
-    clientApi.getClients({ limit: 200 }).then(({ data }) => setClients(data.data));
+    clientApi.getClients({ limit: 200 }).then(({ data }) => setClients(data.data)).catch(() => {});
+    employeeApi.getAll({ limit: 200 }).then(({ data }) => setEmployees(data.data)).catch(() => {});
   }, []);
 
   const {
@@ -40,6 +44,7 @@ const TaskFormModal = ({ task, onSuccess, onClose }) => {
       title: task.title,
       description: task.description || '',
       client: task.client?._id || task.client || '',
+      assignedTo: task.assignedTo?._id || task.assignedTo || '',
       category: task.category,
       priority: task.priority,
       status: task.status,
@@ -48,6 +53,7 @@ const TaskFormModal = ({ task, onSuccess, onClose }) => {
       title: '',
       description: '',
       client: '',
+      assignedTo: '',
       priority: 'Medium',
       status: 'Todo',
       category: 'General',
@@ -61,6 +67,7 @@ const TaskFormModal = ({ task, onSuccess, onClose }) => {
       const payload = {
         ...data,
         client: data.client || undefined,
+        assignedTo: data.assignedTo || undefined,
         dueDate: data.dueDate || undefined,
       };
       if (isEdit) {
@@ -125,12 +132,21 @@ const TaskFormModal = ({ task, onSuccess, onClose }) => {
             <input {...register('dueDate')} type="date" className="input" />
           </div>
         </div>
-        <div className="form-group">
-          <label className="label">Client</label>
-          <select {...register('client')} className="input">
-            <option value="">No client (general task)</option>
-            {clients.map((c) => <option key={c._id} value={c._id}>{c.clientName}</option>)}
-          </select>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="form-group">
+            <label className="label">Client</label>
+            <select {...register('client')} className="input">
+              <option value="">No client (general task)</option>
+              {clients.map((c) => <option key={c._id} value={c._id}>{c.clientName}</option>)}
+            </select>
+          </div>
+          <div className="form-group">
+            <label className="label">Assigned To Employee</label>
+            <select {...register('assignedTo')} className="input">
+              <option value="">Unassigned</option>
+              {employees.map((e) => <option key={e._id} value={e._id}>{e.name} ({e.designation || 'Staff'})</option>)}
+            </select>
+          </div>
         </div>
         <div className="form-group">
           <label className="label">Description</label>
