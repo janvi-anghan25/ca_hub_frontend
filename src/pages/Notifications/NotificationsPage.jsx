@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Bell, CheckCheck, Info } from 'lucide-react';
 import { notificationApi } from '../../api/notificationApi';
 import { SectionLoader } from '../../components/common/LoadingSpinner';
@@ -9,6 +10,7 @@ import toast from 'react-hot-toast';
 const NotificationsPage = () => {
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   const load = async () => {
     setLoading(true);
@@ -25,12 +27,35 @@ const NotificationsPage = () => {
   const markAllRead = async () => {
     await notificationApi.markAllRead();
     toast.success('All marked as read');
+    window.dispatchEvent(new Event('notificationRead'));
     load();
   };
 
-  const markRead = async (id) => {
-    await notificationApi.markRead(id);
-    load();
+  const handleNotificationClick = async (n) => {
+    if (!n.isRead) {
+      try {
+        await notificationApi.markRead(n._id);
+        window.dispatchEvent(new Event('notificationRead'));
+        setNotifications((prev) =>
+          prev.map((item) => (item._id === n._id ? { ...item, isRead: true } : item))
+        );
+      } catch (err) {
+        console.error('Failed to mark notification as read:', err);
+      }
+    }
+
+    const taskId = n.data?.taskId;
+    if (taskId || n.type === 'TASK_ASSIGNED' || n.type === 'TASK_COMPLETED') {
+      navigate('/tasks', { state: { taskId } });
+    } else if (n.type === 'GST_FILED' || n.data?.gstReturnId) {
+      navigate('/gst');
+    } else if (n.type === 'ITR_FILED' || n.data?.itrReturnId) {
+      navigate('/itr');
+    } else if (n.type === 'INVOICE_CREATED' || n.data?.invoiceId) {
+      navigate('/invoices');
+    } else if (n.type === 'DOCUMENT_UPLOADED' || n.data?.documentId) {
+      navigate('/documents');
+    }
   };
 
   const unreadCount = notifications.filter((n) => !n.isRead).length;
@@ -57,7 +82,7 @@ const NotificationsPage = () => {
             {notifications.map((n) => (
               <div
                 key={n._id}
-                onClick={() => !n.isRead && markRead(n._id)}
+                onClick={() => handleNotificationClick(n)}
                 className={`flex items-start gap-4 px-5 py-4 cursor-pointer hover:bg-forest-50 transition-colors ${!n.isRead ? 'bg-forest-50/50' : ''}`}
               >
                 <div className={`mt-0.5 p-2 rounded-lg flex-shrink-0 ${!n.isRead ? 'bg-forest-100' : 'bg-forest-50'}`}>

@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Plus, Edit2, Trash2, CheckCircle, Search, LayoutGrid, List, Eye } from 'lucide-react';
 import { taskApi } from '../../api/taskApi';
 import { SectionLoader } from '../../components/common/LoadingSpinner';
@@ -17,6 +18,7 @@ const PRIORITIES = ['Low', 'Medium', 'High', 'Urgent'];
 const CATEGORIES = ['GST', 'ITR', 'Audit', 'ROC', 'TDS', 'General', 'Other'];
 
 const TasksPage = () => {
+  const location = useLocation();
   const [tasks, setTasks] = useState([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
@@ -36,6 +38,12 @@ const TasksPage = () => {
   const [detailTaskId, setDetailTaskId] = useState(null);
   const [deleteId, setDeleteId] = useState(null);
   const [deleting, setDeleting] = useState(false);
+
+  useEffect(() => {
+    if (location.state?.taskId) {
+      setDetailTaskId(location.state.taskId);
+    }
+  }, [location.state]);
 
   const LIMIT = viewMode === 'kanban' ? 100 : 15;
 
