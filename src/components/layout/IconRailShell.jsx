@@ -2,10 +2,11 @@ import { useEffect, useMemo, useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { LogOut, X } from 'lucide-react';
 import { filterNavGroups } from '../../config/navGroups';
+import { CAEmblem } from '../common/CALogo';
 
 const BrandMark = () => (
-  <div className="w-9 h-9 rounded-lg bg-brass text-forest font-display font-bold text-sm flex items-center justify-center shadow-sm">
-    CA
+  <div className="flex items-center justify-center p-1.5 transition-transform hover:scale-105">
+    <CAEmblem size={38} idPrefix="rail-brand" />
   </div>
 );
 

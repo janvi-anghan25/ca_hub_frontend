@@ -1,0 +1,103 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 100" width="100%" height="100%">
+  <defs>
+    <!-- Background Gradient for Icon Badge -->
+    <linearGradient id="badge-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0A221E" />
+      <stop offset="50%" stop-color="#0F2F2A" />
+      <stop offset="100%" stop-color="#1A4A42" />
+    </linearGradient>
+
+    <!-- Gold Foil Gradient -->
+    <linearGradient id="gold-grad-h" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F3E5AB" />
+      <stop offset="30%" stop-color="#DFC18A" />
+      <stop offset="60%" stop-color="#C4A574" />
+      <stop offset="100%" stop-color="#9A7B4F" />
+    </linearGradient>
+
+    <!-- Gold Accent Linear -->
+    <linearGradient id="gold-bright-h" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#FFEBB3" />
+      <stop offset="50%" stop-color="#DFC18A" />
+      <stop offset="100%" stop-color="#C4A574" />
+    </linearGradient>
+
+    <filter id="shadow-h" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#000000" flood-opacity="0.3" />
+    </filter>
+  </defs>
+
+  <!-- Left Icon Emblem Badge (80x80) -->
+  <g transform="translate(10, 10)">
+    <!-- Badge Background -->
+    <rect width="80" height="80" rx="20" fill="url(#badge-grad)" />
+    <!-- Gold Border -->
+    <rect x="2" y="2" width="76" height="76" rx="18" fill="none" stroke="url(#gold-grad-h)" stroke-width="1.5" opacity="0.8" />
+    
+    <!-- CA Monogram in Badge -->
+    <g transform="translate(8, 8) scale(0.125)">
+      <!-- Letter 'C' -->
+      <path
+        d="M 230 150 
+           C 150 150, 95 195, 95 260 
+           C 95 325, 150 370, 230 370 
+           C 265 370, 292 360, 312 346 
+           L 295 310 
+           C 278 322, 258 330, 230 330 
+           C 176 330, 138 298, 138 260 
+           C 138 222, 176 190, 230 190 
+           C 258 190, 278 198, 295 210 
+           L 312 174 
+           C 292 160, 265 150, 230 150 Z"
+        fill="#FFFFFF"
+      />
+
+      <!-- Letter 'A' -->
+      <path
+        d="M 335 152 
+           L 270 368 
+           L 312 368 
+           L 326 318 
+           L 394 318 
+           L 408 368 
+           L 450 368 
+           L 385 152 
+           L 335 152 Z 
+           M 360 200 
+           L 384 282 
+           L 336 282 
+           Z"
+        fill="#FFFFFF"
+      />
+
+      <!-- Verification Swash -->
+      <path
+        d="M 285 304 
+           L 335 348 
+           L 442 225 
+           C 445 221, 440 216, 434 220 
+           L 332 316 
+           L 295 284 
+           C 289 279, 281 288, 285 294 
+           Z"
+        fill="url(#gold-bright-h)"
+      />
+    </g>
+  </g>
+
+  <!-- Brand Typography -->
+  <g transform="translate(108, 22)">
+    <!-- Brand Title -->
+    <text x="0" y="34" font-family="'Source Serif 4', Georgia, serif" font-size="34" font-weight="700" fill="#0F2F2A" letter-spacing="-0.5">
+      CA <tspan fill="#C4A574">Hub</tspan>
+    </text>
+    
+    <!-- Accent Line -->
+    <line x1="0" y1="46" x2="280" y2="46" stroke="url(#gold-grad-h)" stroke-width="1.5" opacity="0.6" />
+
+    <!-- Subtitle -->
+    <text x="0" y="62" font-family="'DM Sans', system-ui, sans-serif" font-size="10.5" font-weight="600" fill="#5A7A72" letter-spacing="3.2">
+      CHARTERED ACCOUNTANTS
+    </text>
+  </g>
+</svg>
