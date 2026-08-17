@@ -1,12 +1,16 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
+import { Camera, X } from 'lucide-react';
 import { clientApi } from '../../api/clientApi';
 import Modal from '../../components/common/Modal';
+import ClientAvatar from '../../components/common/ClientAvatar';
 import toast from 'react-hot-toast';
 
 const CATEGORIES = ['GST', 'ITR', 'Company', 'LLP', 'Partnership', 'Audit', 'Other'];
+const MAX_PHOTO_BYTES = 5 * 1024 * 1024;
+const ALLOWED_PHOTO_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 
 const schema = z.object({
   clientName: z.string().min(2, 'Required'),
@@ -28,6 +32,9 @@ const BUSINESS_TYPES = ['Proprietorship', 'Partnership', 'LLP', 'Private Limited
 
 const ClientFormModal = ({ client, onSuccess, onClose }) => {
   const [loading, setLoading] = useState(false);
+  const [photoFile, setPhotoFile] = useState(null);
+  const [photoPreview, setPhotoPreview] = useState(client?.photo || null);
+  const fileInputRef = useRef(null);
   const isEdit = !!client;
 
   const { register, handleSubmit, formState: { errors }, watch, setValue } = useForm({
@@ -52,6 +59,28 @@ const ClientFormModal = ({ client, onSuccess, onClose }) => {
   });
 
   const selectedCategories = watch('category') || [];
+  const clientNameVal = watch('clientName') || client?.clientName || '';
+
+  const handlePhotoSelect = (e) => {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+
+    if (!ALLOWED_PHOTO_TYPES.includes(file.type)) {
+      return toast.error('Only JPG, PNG or WebP images are allowed');
+    }
+    if (file.size > MAX_PHOTO_BYTES) {
+      return toast.error('Image must be 5 MB or smaller');
+    }
+
+    setPhotoFile(file);
+    setPhotoPreview(URL.createObjectURL(file));
+  };
+
+  const handleRemovePhoto = () => {
+    setPhotoFile(null);
+    setPhotoPreview(null);
+  };
 
   const toggleCategory = (cat) => {
     const next = selectedCategories.includes(cat)
@@ -63,13 +92,26 @@ const ClientFormModal = ({ client, onSuccess, onClose }) => {
   const onSubmit = async (data) => {
     setLoading(true);
     try {
+      let targetId = client?._id;
       if (isEdit) {
         await clientApi.updateClient(client._id, data);
         toast.success('Client updated');
       } else {
-        await clientApi.createClient(data);
+        const res = await clientApi.createClient(data);
+        targetId = res.data.data?._id;
         toast.success('Client created');
       }
+
+      if (photoFile && targetId) {
+        try {
+          const formData = new FormData();
+          formData.append('photo', photoFile);
+          await clientApi.uploadPhoto(targetId, formData);
+        } catch {
+          toast.error('Client saved, but photo upload failed');
+        }
+      }
+
       onSuccess();
     } finally {
       setLoading(false);
@@ -92,6 +134,55 @@ const ClientFormModal = ({ client, onSuccess, onClose }) => {
       }
     >
       <form className="space-y-4">
+        {/* Photo uploader */}
+        <div className="flex items-center gap-4 p-3 bg-forest-50/70 border border-forest-100 rounded-xl">
+          <div className="relative group flex-shrink-0">
+            <ClientAvatar
+              name={clientNameVal}
+              photo={photoPreview}
+              size="lg"
+              rounded="xl"
+              variant="dark"
+            />
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="absolute -bottom-1 -right-1 p-1.5 rounded-lg bg-white border border-forest-200 text-forest-500 hover:text-forest hover:border-forest-400 shadow-sm transition-colors"
+              title="Upload photo"
+            >
+              <Camera size={14} />
+            </button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              className="hidden"
+              onChange={handlePhotoSelect}
+            />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-xs font-semibold text-forest">Client Profile Photo</p>
+            <p className="text-[11px] text-forest-400 mt-0.5">JPG, PNG or WebP up to 5MB. Shown in client lists and details.</p>
+            <div className="flex items-center gap-2 mt-2">
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                className="text-xs font-medium text-forest-600 hover:text-forest underline"
+              >
+                {photoPreview ? 'Change Photo' : 'Upload Photo'}
+              </button>
+              {photoPreview && photoFile && (
+                <button
+                  type="button"
+                  onClick={handleRemovePhoto}
+                  className="text-xs font-medium text-red-500 hover:text-red-700 ml-2"
+                >
+                  Remove
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="form-group">
             <label className="label">Client Name *</label>

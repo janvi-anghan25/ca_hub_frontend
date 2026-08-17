@@ -2,6 +2,7 @@ import { useRef, useState } from 'react';
 import { Camera, Loader2 } from 'lucide-react';
 import Modal from '../../components/common/Modal';
 import StatusBadge from '../../components/common/StatusBadge';
+import ClientAvatar from '../../components/common/ClientAvatar';
 import { clientApi } from '../../api/clientApi';
 import toast from 'react-hot-toast';
 
@@ -53,13 +54,13 @@ const ClientDetailModal = ({ client: initialClient, onClose, onUpdated }) => {
         {/* Header */}
         <div className="flex items-center gap-4 p-4 bg-forest-50 rounded-xl">
           <div className="relative group flex-shrink-0">
-            <div className="w-16 h-16 rounded-xl bg-forest flex items-center justify-center text-parchment text-2xl font-bold font-display overflow-hidden">
-              {client.photo ? (
-                <img src={client.photo} alt={client.clientName} className="w-full h-full object-cover" />
-              ) : (
-                client.clientName?.[0]?.toUpperCase()
-              )}
-            </div>
+            <ClientAvatar
+              name={client.clientName}
+              photo={client.photo}
+              size="lg"
+              rounded="xl"
+              variant="dark"
+            />
             <button
               type="button"
               onClick={handlePickPhoto}

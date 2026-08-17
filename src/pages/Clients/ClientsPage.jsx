@@ -6,6 +6,7 @@ import Pagination from '../../components/common/Pagination';
 import StatusBadge from '../../components/common/StatusBadge';
 import EmptyState from '../../components/common/EmptyState';
 import ConfirmDialog from '../../components/common/ConfirmDialog';
+import ClientAvatar from '../../components/common/ClientAvatar';
 import ClientFormModal from './ClientFormModal';
 import ClientDetailModal from './ClientDetailModal';
 import toast from 'react-hot-toast';
@@ -139,9 +140,11 @@ const ClientsPage = () => {
                   <tr key={client._id}>
                     <td>
                       <div className="flex items-center gap-2.5">
-                        <div className="w-8 h-8 rounded-full bg-forest-100 flex items-center justify-center text-forest font-semibold text-sm flex-shrink-0">
-                          {client.clientName?.[0]?.toUpperCase()}
-                        </div>
+                        <ClientAvatar
+                          name={client.clientName}
+                          photo={client.photo}
+                          size="sm"
+                        />
                         <div>
                           <p className="font-medium text-forest text-sm">{client.clientName}</p>
                           {client.firmName && <p className="text-xs text-forest-400">{client.firmName}</p>}
